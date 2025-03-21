@@ -4,7 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
 local LocalPlayer = Players.LocalPlayer
-local MenuVisible = false
+local MenuVisible = true -- UI starts visible
 
 print("[DEBUG] Head Hitbox Script Loaded - Running...")
 
@@ -48,102 +48,61 @@ end)
 -- // 🆕 APPLY WHEN PLAYER SPAWNS
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(character)
-        task.wait(1) -- Delay for loading
+        task.wait(1) -- Allow character to fully load
         ModifyHeadHitbox(character)
     end)
 end)
 
-print("[DEBUG] Head Hitbox Script Running!")
-
--- // 🖥 CUSTOMIZATION UI
-local screenGui = Instance.new("ScreenGui")
+-- // 🖥 CREATE UI
+local screenGui = Instance.new("ScreenGui", CoreGui)
 screenGui.Name = "HeadHitboxUI"
-screenGui.Parent = CoreGui
-screenGui.Enabled = false -- Hidden initially
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 180)
-frame.Position = UDim2.new(0.4, 0, 0.3, 0)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 250, 0, 150)
+frame.Position = UDim2.new(0.1, 0, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 2
-frame.Draggable = true
-frame.Active = true
-frame.Parent = screenGui
+frame.Visible = true
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "🎯 Head Hitbox Settings"
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 18
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-title.Parent = frame
+local sizeInput = Instance.new("TextBox", frame)
+sizeInput.Size = UDim2.new(1, 0, 0, 30)
+sizeInput.Position = UDim2.new(0, 0, 0, 10)
+sizeInput.PlaceholderText = "Enter hitbox size (e.g., 21,21,21)"
+sizeInput.Text = "21,21,21"
 
--- // 🛠 SLIDER FUNCTION
-local function createSlider(labelText, minValue, maxValue, defaultValue, callback)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 50)
-    container.BackgroundTransparency = 1
-    container.Parent = frame
+local transparencyInput = Instance.new("TextBox", frame)
+transparencyInput.Size = UDim2.new(1, 0, 0, 30)
+transparencyInput.Position = UDim2.new(0, 0, 0, 50)
+transparencyInput.PlaceholderText = "Enter transparency (0-1)"
+transparencyInput.Text = "0"
 
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 20)
-    label.Text = labelText .. ": " .. tostring(defaultValue)
-    label.TextSize = 14
-    label.Font = Enum.Font.SourceSans
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.BackgroundTransparency = 1
-    label.Parent = container
+local applyButton = Instance.new("TextButton", frame)
+applyButton.Size = UDim2.new(1, 0, 0, 30)
+applyButton.Position = UDim2.new(0, 0, 0, 90)
+applyButton.Text = "Apply"
 
-    local slider = Instance.new("TextButton")
-    slider.Size = UDim2.new(1, 0, 0, 30)
-    slider.Text = "⬅ Drag to Adjust ➡"
-    slider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    slider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    slider.Parent = container
+applyButton.MouseButton1Click:Connect(function()
+    local sizeValues = {}
+    for value in string.gmatch(sizeInput.Text, "%d+") do
+        table.insert(sizeValues, tonumber(value))
+    end
+    if #sizeValues == 3 then
+        HitboxSize = Vector3.new(sizeValues[1], sizeValues[2], sizeValues[3])
+    end
 
-    local dragging = false
+    local transparencyValue = tonumber(transparencyInput.Text)
+    if transparencyValue then
+        HitboxTransparency = math.clamp(transparencyValue, 0, 1)
+    end
 
-    slider.MouseButton1Down:Connect(function()
-        dragging = true
-    end)
-
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local mouseX = input.Position.X
-            local screenWidth = game:GetService("Workspace").CurrentCamera.ViewportSize.X
-            local percentage = math.clamp(mouseX / screenWidth, 0, 1)
-            local value = math.floor(minValue + (maxValue - minValue) * percentage)
-            label.Text = labelText .. ": " .. tostring(value)
-            callback(value)
-        end
-    end)
-end
-
--- // 🎯 HITBOX SIZE SLIDER
-createSlider("Hitbox Size", 5, 50, 21, function(value)
-    HitboxSize = Vector3.new(value, value, value)
+    print("[DEBUG] Applied New Hitbox Settings: Size = ", HitboxSize, ", Transparency = ", HitboxTransparency)
 end)
 
--- // 🔄 TRANSPARENCY SLIDER
-createSlider("Transparency", 0, 1, 0, function(value)
-    HitboxTransparency = value
-end)
-
--- // 🚀 TOGGLE MENU WITH INSERT
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+-- // ⌨️ TOGGLE UI WITH INSERT
+UserInputService.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.Insert then
-        MenuVisible = not MenuVisible
-        screenGui.Enabled = MenuVisible
-        print("[DEBUG] UI Toggled:", MenuVisible)
+        frame.Visible = not frame.Visible
     end
 end)
 
-print("[DEBUG] Customization UI Ready!")
+print("[DEBUG] Head Hitbox UI Loaded & Running!")

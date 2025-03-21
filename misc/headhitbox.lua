@@ -5,36 +5,23 @@ local LocalPlayer = Players.LocalPlayer
 
 print("[DEBUG] Head Hitbox Script Loaded - Running...")
 
--- 🏷️ Table for Known Head Types
-local HeadTypes = {
-    ["Head"] = true, -- Standard R6/R15 head
-    ["MeshPart"] = true, -- UGC or custom mesh head
-    ["SpecialMesh"] = true -- Custom special-mesh head
-}
-
--- 🛠 Function to Modify Head Hitbox and Ensure Visibility is Disabled
+-- 🛠 Function to Modify Head Hitbox and Hide Faces
 local function ModifyHeadHitbox(character)
     if not character then return end
 
-    local humanoid = character:FindFirstChild("Humanoid")
-    if not humanoid then return end
-
-    -- Check for Different Head Types
-    for _, obj in pairs(character:GetChildren()) do
-        if HeadTypes[obj.ClassName] then
+    -- Find the head dynamically (R6, R15, Mesh, etc.)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("MeshPart") or part:IsA("Part") and part.Name == "Head" then
             -- Modify Hitbox Size
-            obj.Size = Vector3.new(21, 21, 21)
-            obj.CanCollide = false
-            obj.Massless = true
-            obj.Transparency = 1 -- Fully Invisible
+            part.Size = Vector3.new(21, 21, 21)
+            part.CanCollide = false
+            part.Massless = true
+            part.Transparency = 1 -- Make the head invisible
 
-            -- Hide Decals or Textures (Faces, UGC Skins, etc.)
-            for _, child in pairs(obj:GetChildren()) do
+            -- Hide Face Textures
+            for _, child in pairs(part:GetChildren()) do
                 if child:IsA("Decal") or child:IsA("Texture") then
                     child.Transparency = 1
-                elseif child:IsA("SpecialMesh") then
-                    child.TextureId = "" -- Remove Custom Mesh Textures
-                    child.VertexColor = Vector3.new(0, 0, 0) -- Hide SpecialMesh
                 end
             end
 

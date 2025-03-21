@@ -1,4 +1,3 @@
--- ⚙ Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -28,10 +27,7 @@ local scripts = {
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
 
--- 🛠 Hitbox Settings
-_G.HitboxEnabled = false -- Default: Disabled
-
--- 📜 Function to Load Scripts
+-- 📜 Function to Load Scripts On Demand
 local function loadScript(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
@@ -46,11 +42,6 @@ local function loadScript(url)
         warn("[ERROR] Failed to load script:", url)
     end
 end
-
--- 🎯 Load Aimbot on Startup (Hitbox won't auto-load)
-print("[DEBUG] Loading Scripts...")
-loadScript(scripts.Aimbot)
-print("[DEBUG] Scripts Loaded!")
 
 -- 🖥 UI Creation
 print("[DEBUG] Creating UI...")
@@ -74,7 +65,7 @@ print("[DEBUG] UI Created!")
 local uiListLayout = Instance.new("UIListLayout")
 uiListLayout.Parent = frame
 
--- 🖥 Create Buttons
+-- 🖥 Create Buttons to Load Scripts
 local function createButton(text, callback)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(1, 0, 0, 30)
@@ -94,23 +85,13 @@ local function createButton(text, callback)
     end
 end
 
--- 🔘 Load Scripts Buttons
+-- 🔘 Create Buttons for Script Loading (Only Loads on Click)
 for name, url in pairs(scripts) do
     createButton("Load " .. name, function()
         print("[DEBUG] Button Clicked:", name)
         loadScript(url)
     end)
 end
-
--- 📌 Hitbox Toggle Button
-createButton("Toggle Hitbox", function()
-    _G.HitboxEnabled = not _G.HitboxEnabled
-    print("[DEBUG] Hitbox Enabled:", _G.HitboxEnabled)
-
-    if _G.HitboxEnabled then
-        loadScript(scripts.Hitbox) -- Load script when enabling
-    end
-end)
 
 -- 📌 Keep UI on Top (Reparent if it gets lost)
 task.spawn(function()

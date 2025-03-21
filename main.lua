@@ -24,7 +24,7 @@ local scripts = {
     Aimbot = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua",
     ESP = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua",
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
-    Hitbox = "https://github.com/rustbuilderz/RBS/main/misc/headhitbox.lua",
+    Hitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua",
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
@@ -46,43 +46,59 @@ local function loadScript(url)
 end
 
 -- 🛠 Function to Modify Hitboxes
-local function ModifyHitbox()
-    print("[DEBUG] Modifying Hitboxes...")
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-            if player.Character.Humanoid.Health > 0 then -- Ensure player is alive
-                local hitboxParts = {
-                    "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", -- Standard parts
-                    "RightUpperLeg", "LeftUpperLeg", "RightLeg", "LeftLeg", -- Legs
-                    "HeadHB" -- Custom hitboxes (like Arsenal)
-                }
+local function ModifyHitbox(character)
+    if not character then return end
 
-                for _, partName in ipairs(hitboxParts) do
-                    local part = player.Character:FindFirstChild(partName)
-                    if part then
-                        part.CanCollide = false
-                        part.Transparency = 0.2
-                        part.Size = Vector3.new(30, 30, 30)
-                    end
-                end
+    local hitboxParts = {
+        "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", -- Standard parts
+        "RightUpperLeg", "LeftUpperLeg", "RightLeg", "LeftLeg", -- Legs
+        "HeadHB" -- Custom hitboxes (like Arsenal)
+    }
 
-                -- Hide Head
-                local head = player.Character:FindFirstChild("Head")
-                if head then
-                    head.Transparency = 1
-                    head.CanCollide = false
-                end
+    for _, partName in ipairs(hitboxParts) do
+        local part = character:FindFirstChild(partName)
+        if part then
+            part.CanCollide = false
+            part.Transparency = 0.2
+            part.Size = Vector3.new(30, 30, 30)
+        end
+    end
 
-                -- Hide Face
-                local face = head and head:FindFirstChild("face")
-                if face then
-                    face.Transparency = 1
+    -- Hide Head
+    local head = character:FindFirstChild("Head")
+    if head then
+        head.Transparency = 1
+        head.CanCollide = false
+    end
+
+    -- Hide Face
+    local face = head and head:FindFirstChild("face")
+    if face then
+        face.Transparency = 1
+    end
+end
+
+-- 🔄 Continuous Hitbox Modification
+task.spawn(function()
+    while true do
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                if player.Character.Humanoid.Health > 0 then
+                    ModifyHitbox(player.Character)
                 end
             end
         end
+        task.wait(0.1) -- Adjust frequency (Lower = faster updates)
     end
-    print("[DEBUG] Hitbox Modification Complete!")
-end
+end)
+
+-- 🆕 Apply Modifications When a Player Spawns
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        task.wait(1) -- Small delay to allow loading
+        ModifyHitbox(character)
+    end)
+end)
 
 -- 🖥 UI Creation
 print("[DEBUG] Creating UI...")
@@ -136,10 +152,14 @@ for name, url in pairs(scripts) do
     end
 end
 
--- 🔘 Special Button for Hitbox Modification
+-- 🔘 Special Button for Manual Hitbox Modification
 createButton("Modify Hitbox", function()
     print("[DEBUG] Button Clicked: Modify Hitbox")
-    ModifyHitbox()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            ModifyHitbox(player.Character)
+        end
+    end
 end)
 
 -- 📌 Keep UI on Top (Reparent if it gets lost)

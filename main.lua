@@ -1,7 +1,7 @@
 -- // ⚙ SERVICES
 local CoreGui = game:GetService("CoreGui")
 
-print("[DEBUG] Script Loaded - Initializing UI...")
+print("[DEBUG] Script Loaded - Initializing UI... VERSION 1.1")
 
 -- // 📜 SCRIPT URLS
 local scripts = {

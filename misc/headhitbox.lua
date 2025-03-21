@@ -5,7 +5,7 @@ local LocalPlayer = Players.LocalPlayer
 
 print("[DEBUG] Head Hitbox Script Loaded - Running...")
 
--- 🛠 Function to Modify Head Hitbox
+-- 🛠 Function to Modify Head Hitbox and Hide Face
 local function ModifyHeadHitbox(character)
     if not character then return end
 
@@ -14,7 +14,14 @@ local function ModifyHeadHitbox(character)
         head.Size = Vector3.new(21, 21, 21) -- Enlarged Head Hitbox
         head.CanCollide = false
         head.Massless = true
-        print("[DEBUG] Head Hitbox Modified for:", character.Name)
+        
+        -- Hide Face
+        local face = head:FindFirstChild("face")
+        if face then
+            face.Transparency = 1
+        end
+
+        print("[DEBUG] Head Hitbox & Face Modified for:", character.Name)
     end
 end
 

@@ -1,3 +1,4 @@
+-- ⚙ Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -27,6 +28,9 @@ local scripts = {
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
 
+-- 🛠 Hitbox Settings
+_G.HitboxEnabled = false -- Default: Disabled
+
 -- 📜 Function to Load Scripts
 local function loadScript(url)
     local success, response = pcall(function()
@@ -43,10 +47,9 @@ local function loadScript(url)
     end
 end
 
--- 🎯 Load Aimbot & Hitbox Scripts on Startup
+-- 🎯 Load Aimbot on Startup (Hitbox won't auto-load)
 print("[DEBUG] Loading Scripts...")
 loadScript(scripts.Aimbot)
-loadScript(scripts.Hitbox)
 print("[DEBUG] Scripts Loaded!")
 
 -- 🖥 UI Creation
@@ -98,6 +101,16 @@ for name, url in pairs(scripts) do
         loadScript(url)
     end)
 end
+
+-- 📌 Hitbox Toggle Button
+createButton("Toggle Hitbox", function()
+    _G.HitboxEnabled = not _G.HitboxEnabled
+    print("[DEBUG] Hitbox Enabled:", _G.HitboxEnabled)
+
+    if _G.HitboxEnabled then
+        loadScript(scripts.Hitbox) -- Load script when enabling
+    end
+end)
 
 -- 📌 Keep UI on Top (Reparent if it gets lost)
 task.spawn(function()

@@ -3,12 +3,12 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- 🛠 Global Settings (Can be modified from main.lua)
-_G.HitboxEnabled = _G.HitboxEnabled or True -- Controls execution
-_G.HitboxSize = _G.HitboxSize or Vector3.new(30, 30, 30) -- Default size
-_G.HitboxTransparency = _G.HitboxTransparency or 0.2 -- Default transparency (0 = visible, 1 = invisible)
-_G.HideHead = _G.HideHead or true -- Hide the head
-_G.HideFace = _G.HideFace or true -- Hide the face
+-- 🛠 Local Settings
+local hitboxEnabled = true -- Controls execution
+local hitboxSize = Vector3.new(30, 30, 30) -- Default size
+local hitboxTransparency = 0.2 -- Default transparency (0 = visible, 1 = invisible)
+local hideHead = true -- Hide the head
+local hideFace = true -- Hide the face
 
 -- 🛠 Function to Modify Hitboxes
 local function ModifyHitbox(character)
@@ -23,13 +23,13 @@ local function ModifyHitbox(character)
         local part = character:FindFirstChild(partName)
         if part then
             part.CanCollide = false
-            part.Transparency = _G.HitboxTransparency
-            part.Size = _G.HitboxSize
+            part.Transparency = hitboxTransparency
+            part.Size = hitboxSize
         end
     end
 
     -- Hide Head
-    if _G.HideHead then
+    if hideHead then
         local head = character:FindFirstChild("Head")
         if head then
             head.Transparency = 1
@@ -38,7 +38,7 @@ local function ModifyHitbox(character)
     end
 
     -- Hide Face
-    if _G.HideFace then
+    if hideFace then
         local face = character:FindFirstChild("Head") and character.Head:FindFirstChild("face")
         if face then
             face.Transparency = 1
@@ -48,7 +48,7 @@ end
 
 -- 🔄 Loop to Continuously Apply Changes **ONLY WHEN ENABLED**
 RunService.RenderStepped:Connect(function()
-    if _G.HitboxEnabled then -- ✅ Only run when Hitbox is enabled
+    if hitboxEnabled then -- ✅ Only run when hitbox is enabled
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
                 if player.Character.Humanoid.Health > 0 then -- Ensure player is alive
@@ -56,5 +56,19 @@ RunService.RenderStepped:Connect(function()
                 end
             end
         end
+    end
+end)
+
+-- 🛠 Function to Toggle Hitbox
+local function ToggleHitbox()
+    hitboxEnabled = not hitboxEnabled
+    print("[DEBUG] Hitbox Enabled:", hitboxEnabled)
+end
+
+-- Example of how to bind a key to toggle hitbox
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.H then -- Press "H" to toggle
+        ToggleHitbox()
     end
 end)

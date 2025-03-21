@@ -1,8 +1,8 @@
 -- // ⚙ SERVICES
+local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
-print("[DEBUG] Script Loaded - Initializing UI... VERSION 1.1")
-print("PLEASEWORK")
+print("[DEBUG] Script Loaded - Initializing UI...")
 
 -- // 📜 SCRIPT URLS
 local scripts = {
@@ -19,7 +19,7 @@ local function loadScript(url)
     print("[DEBUG] Fetching:", url)
 
     local success, response = pcall(function()
-        return game:HttpGet(url, true) -- Force HTTP request
+        return game:HttpGet(url, true)
     end)
 
     if success and response then
@@ -49,13 +49,14 @@ screenGui.Parent = CoreGui
 
 -- // 🖼 MAIN FRAME
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 350) -- Wider layout
+frame.Size = UDim2.new(0, 300, 0, 350)
 frame.Position = UDim2.new(0.05, 0, 0.05, 0)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Dark Background
 frame.BorderSizePixel = 2
 frame.Active = true
 frame.Draggable = true
 frame.ZIndex = 10
+frame.Visible = true -- Initially visible
 frame.Parent = screenGui
 
 -- // 📌 UI TITLE
@@ -65,7 +66,7 @@ title.Text = "🔥 Cheat Menu 🔥"
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 22
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.BackgroundColor3 = Color3.fromRGB(45, 45, 45) -- Slightly lighter for contrast
 title.BorderSizePixel = 0
 title.Parent = frame
 
@@ -96,7 +97,16 @@ local function createButton(text, callback)
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.BorderSizePixel = 1
+    button.AutoButtonColor = false -- Prevents default Roblox hover effect
     button.Parent = scrollingFrame
+
+    -- Hover effect
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end)
 
     button.MouseButton1Click:Connect(callback)
     print("[DEBUG] Button Created:", text)
@@ -130,6 +140,15 @@ task.spawn(function()
             screenGui.Parent = CoreGui
             print("[DEBUG] UI Reparented to Stay on Top")
         end
+    end
+end)
+
+-- // 🚀 TOGGLE MENU VISIBILITY (INSERT KEY)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Insert then
+        frame.Visible = not frame.Visible
+        print("[DEBUG] Toggled Menu Visibility:", frame.Visible)
     end
 end)
 

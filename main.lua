@@ -1,11 +1,8 @@
 -- ⚙ Services
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
-print("[DEBUG] Script Loaded - Initializing...")
+print("[DEBUG] Script Loaded - Initializing UI...")
 
 -- ⚙ Script URLs
 local scripts = {
@@ -13,7 +10,8 @@ local scripts = {
     ESP = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua",
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
-    Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
+    Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua",
+    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"
 }
 
 -- 📜 Function to Load Scripts On Demand
@@ -46,7 +44,7 @@ frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 2
 frame.Active = true
-frame.Draggable = false
+frame.Draggable = true
 frame.ZIndex = 10
 frame.Parent = screenGui
 print("[DEBUG] UI Created!")

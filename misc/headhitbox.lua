@@ -3,59 +3,41 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- 🛠 Function to Modify Hitboxes
-local function ModifyHitbox(character)
+print("[DEBUG] Head Hitbox Script Loaded - Running...")
+
+-- 🛠 Function to Modify Head Hitbox
+local function ModifyHeadHitbox(character)
     if not character then return end
 
-    local hitboxParts = {
-        "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", -- Standard parts
-        "RightUpperLeg", "LeftUpperLeg", "RightLeg", "LeftLeg", -- Legs
-        "HeadHB" -- Custom hitboxes (like Arsenal)
-    }
-
-    for _, partName in ipairs(hitboxParts) do
-        local part = character:FindFirstChild(partName)
-        if part then
-            part.CanCollide = false
-            part.Transparency = 0.2
-            part.Size = Vector3.new(30, 30, 30)
-        end
-    end
-
-    -- Hide Head
     local head = character:FindFirstChild("Head")
     if head then
-        head.Transparency = 1
+        head.Size = Vector3.new(21, 21, 21) -- Enlarged Head Hitbox
         head.CanCollide = false
-    end
-
-    -- Hide Face
-    local face = head and head:FindFirstChild("face")
-    if face then
-        face.Transparency = 1
+        head.Massless = true
+        print("[DEBUG] Head Hitbox Modified for:", character.Name)
     end
 end
 
--- 🔄 Apply Modifications on Loop
+-- 🔄 Loop to Constantly Modify Head Hitbox
 task.spawn(function()
     while true do
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
                 if player.Character.Humanoid.Health > 0 then
-                    ModifyHitbox(player.Character)
+                    ModifyHeadHitbox(player.Character)
                 end
             end
         end
-        task.wait(0.1) -- Small delay to prevent unnecessary CPU usage
+        task.wait(0.1) -- Runs every 0.1 seconds
     end
 end)
 
 -- 🆕 Apply Modifications When a Player Spawns
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(character)
-        task.wait(1) -- Small delay to allow loading
-        ModifyHitbox(character)
+        task.wait(1) -- Delay for character to fully load
+        ModifyHeadHitbox(character)
     end)
 end)
 
-print("[DEBUG] Hitbox Modification Script Running!")
+print("[DEBUG] Head Hitbox Script Running!")

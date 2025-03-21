@@ -3,7 +3,6 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-print("[DEBUG] Head Hitbox Script Loaded - Running...")
 
 -- 🛠 Function to Modify Head Hitbox and Hide Faces
 local function ModifyHeadHitbox(character)
@@ -25,7 +24,6 @@ local function ModifyHeadHitbox(character)
                 end
             end
 
-            print("[DEBUG] Head Modified for:", character.Name)
         end
     end
 end
@@ -52,4 +50,3 @@ Players.PlayerAdded:Connect(function(player)
     end)
 end)
 
-print("[DEBUG] Head Hitbox Script Running!")

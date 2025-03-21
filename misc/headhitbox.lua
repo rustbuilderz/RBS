@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- 🛠 Global Settings (Can be modified from main.lua)
-_G.HitboxEnabled = _G.HitboxEnabled or false -- Controls execution
+_G.HitboxEnabled = _G.HitboxEnabled or True -- Controls execution
 _G.HitboxSize = _G.HitboxSize or Vector3.new(30, 30, 30) -- Default size
 _G.HitboxTransparency = _G.HitboxTransparency or 0.2 -- Default transparency (0 = visible, 1 = invisible)
 _G.HideHead = _G.HideHead or true -- Hide the head

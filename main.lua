@@ -1,8 +1,16 @@
 -- // ⚙ SERVICES
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
 print("[DEBUG] Script Loaded - Initializing UI...")
+
+-- // 🌍 GLOBAL SETTINGS
+_G.settings = _G.settings or {
+    headHitboxSize = Vector3.new(21, 21, 21),
+    headTransparency = 1,
+}
 
 -- // 📜 SCRIPT URLS
 local scripts = {
@@ -14,141 +22,114 @@ local scripts = {
     HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"
 }
 
--- // 📥 FUNCTION TO LOAD SCRIPTS
+-- Function to load scripts dynamically
 local function loadScript(url)
-    print("[DEBUG] Fetching:", url)
-
+    if not url or url == "" then
+        warn("[ERROR] Invalid Script URL!")
+        return
+    end
     local success, response = pcall(function()
         return game:HttpGet(url, true)
     end)
-
-    if success and response then
-        print("[DEBUG] Script Fetched Successfully.")
-
-        local executed, errorMsg = pcall(function()
-            return loadstring(response)()
-        end)
-
-        if not executed then
-            warn("[ERROR] Execution Failed:", errorMsg)
-        else
-            print("[DEBUG] Script Executed Successfully.")
-        end
+    if not success or not response or response == "" then
+        warn("[ERROR] Failed to Fetch Script:", url)
+        return
+    end
+    local executed, errorMsg = pcall(loadstring(response))
+    if not executed then
+        warn("[ERROR] Execution Failed:", errorMsg)
     else
-        warn("[ERROR] Failed to Load Script:", url)
+        print("[DEBUG] Script Executed Successfully.")
     end
 end
 
 -- // 🎨 UI CREATION
-print("[DEBUG] Creating UI...")
-local screenGui = Instance.new("ScreenGui")
+local screenGui = Instance.new("ScreenGui", CoreGui)
 screenGui.Name = "CheatMenuUI"
 screenGui.IgnoreGuiInset = true
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-screenGui.Parent = CoreGui
 
--- // 🖼 MAIN FRAME
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 350)
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 350, 0, 400)
 frame.Position = UDim2.new(0.05, 0, 0.05, 0)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Dark Background
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 2
 frame.Active = true
 frame.Draggable = true
-frame.ZIndex = 10
-frame.Visible = true -- Initially visible
-frame.Parent = screenGui
+frame.Visible = true
 
--- // 📌 UI TITLE
-local title = Instance.new("TextLabel")
+local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 40)
 title.Text = "🔥 Cheat Menu 🔥"
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 22
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundColor3 = Color3.fromRGB(45, 45, 45) -- Slightly lighter for contrast
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 title.BorderSizePixel = 0
-title.Parent = frame
 
--- // 📜 SCROLLING FRAME
-local scrollingFrame = Instance.new("ScrollingFrame")
+local scrollingFrame = Instance.new("ScrollingFrame", frame)
 scrollingFrame.Size = UDim2.new(1, 0, 1, -45)
 scrollingFrame.Position = UDim2.new(0, 0, 0, 45)
-scrollingFrame.BackgroundTransparency = 1
-scrollingFrame.BorderSizePixel = 0
 scrollingFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
-scrollingFrame.Parent = frame
 
--- // 📌 UI LAYOUT (GRID)
-local gridLayout = Instance.new("UIGridLayout")
-gridLayout.CellSize = UDim2.new(0, 140, 0, 40) -- Buttons in 2 columns
-gridLayout.CellPadding = UDim2.new(0, 10, 0, 10)
-gridLayout.Parent = scrollingFrame
+local layout = Instance.new("UIListLayout", scrollingFrame)
 
-print("[DEBUG] UI Created!")
-
--- // 🔘 FUNCTION TO CREATE BUTTONS
 local function createButton(text, callback)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 130, 0, 40) -- Uniform button size
+    local button = Instance.new("TextButton", scrollingFrame)
+    button.Size = UDim2.new(1, 0, 0, 40)
     button.Text = text
     button.Font = Enum.Font.SourceSansBold
     button.TextSize = 18
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.BorderSizePixel = 1
-    button.AutoButtonColor = false -- Prevents default Roblox hover effect
-    button.Parent = scrollingFrame
-
-    -- Hover effect
-    button.MouseEnter:Connect(function()
-        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-    end)
-    button.MouseLeave:Connect(function()
-        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end)
-
     button.MouseButton1Click:Connect(callback)
-    print("[DEBUG] Button Created:", text)
 end
 
--- // 🛠 CREATE BUTTONS FOR FEATURES
 for name, url in pairs(scripts) do
-    if name ~= "HeadHitbox" then -- Ensure Head Hitbox has its own button
-        createButton("Load " .. name, function()
-            print("[DEBUG] Button Clicked:", name)
-            loadScript(url)
-        end)
-    end
+    createButton("Load " .. name, function()
+        loadScript(url)
+    end)
 end
 
--- // 🎯 SINGLE BUTTON FOR HEAD HITBOX
-createButton("Enable Head Hitbox", function()
-    print("[DEBUG] Button Clicked: Enable Head Hitbox")
-    if scripts.HeadHitbox then
-        print("[DEBUG] Loading Head Hitbox Script...")
-        loadScript(scripts.HeadHitbox)
-    else
-        warn("[ERROR] HeadHitbox script URL not found!")
+-- Customization Inputs
+local function createTextBox(labelText, defaultValue, onTextChanged)
+    local label = Instance.new("TextLabel", scrollingFrame)
+    label.Size = UDim2.new(1, 0, 0, 30)
+    label.Text = labelText
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.BackgroundTransparency = 1
+    
+    local textBox = Instance.new("TextBox", scrollingFrame)
+    textBox.Size = UDim2.new(1, 0, 0, 30)
+    textBox.Text = defaultValue
+    textBox.ClearTextOnFocus = false
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    textBox.FocusLost:Connect(function()
+        onTextChanged(textBox.Text)
+    end)
+end
+
+createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
+    local values = {text:match("(%d+),(%d+),(%d+)")}
+    if #values == 3 then
+        _G.settings.headHitboxSize = Vector3.new(tonumber(values[1]), tonumber(values[2]), tonumber(values[3]))
+        print("[DEBUG] Updated Head Hitbox Size:", _G.settings.headHitboxSize)
     end
 end)
 
--- // 📌 KEEP UI ON TOP
-task.spawn(function()
-    while task.wait(1) do
-        if screenGui.Parent ~= CoreGui then
-            screenGui.Parent = CoreGui
-            print("[DEBUG] UI Reparented to Stay on Top")
-        end
+createTextBox("Head Transparency (0-1)", "1", function(text)
+    local value = tonumber(text)
+    if value and value >= 0 and value <= 1 then
+        _G.settings.headTransparency = value
+        print("[DEBUG] Updated Head Transparency:", _G.settings.headTransparency)
     end
 end)
 
--- // 🚀 TOGGLE MENU VISIBILITY (INSERT KEY)
+-- Toggle UI Visibility with Insert Key
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Insert then
         frame.Visible = not frame.Visible
-        print("[DEBUG] Toggled Menu Visibility:", frame.Visible)
     end
 end)
 

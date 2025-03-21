@@ -15,14 +15,21 @@ local scripts = {
 
 -- 📜 Function to Load Scripts On Demand
 local function loadScript(url)
+    print("[DEBUG] Fetching script from:", url)
     local success, response = pcall(function()
-        return game:HttpGet(url)
+        return game:HttpGet(url, true) -- Force HTTP request
     end)
-    if success then
-        print("[DEBUG] Loaded:", url)
-        local loadedSuccess, errorMessage = pcall(loadstring(response))
+
+    if success and response then
+        print("[DEBUG] Script fetched successfully.")
+        local loadedSuccess, errorMessage = pcall(function()
+            return loadstring(response)()
+        end)
+
         if not loadedSuccess then
             warn("[ERROR] Script Execution Failed:", errorMessage)
+        else
+            print("[DEBUG] Script Executed Successfully.")
         end
     else
         warn("[ERROR] Failed to load script:", url)
@@ -38,7 +45,7 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 250) -- Adjusted size to fit buttons
+frame.Size = UDim2.new(0, 250, 0, 280) -- Adjusted size to fit buttons
 frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 2
@@ -84,7 +91,12 @@ end
 -- 🔘 Single Button for Head Hitbox
 createButton("Enable Head Hitbox", function()
     print("[DEBUG] Button Clicked: Enable Head Hitbox")
-    loadScript(scripts.HeadHitbox)
+    if scripts.HeadHitbox then
+        print("[DEBUG] Head Hitbox Script URL:", scripts.HeadHitbox)
+        loadScript(scripts.HeadHitbox)
+    else
+        warn("[ERROR] HeadHitbox script URL not found!")
+    end
 end)
 
 -- 📌 Keep UI on Top (Reparent if it gets lost)

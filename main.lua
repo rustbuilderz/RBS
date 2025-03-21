@@ -8,7 +8,7 @@ local scripts = {
     Aimbot = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua",
     ESP = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua",
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
-    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua",
+    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headinvisible.lua",
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
@@ -21,6 +21,14 @@ _G.AimbotSettings = {
     LockStrength = 0.8,
     PredictionFactor = 0.08,
     TargetPart = "Head"
+}
+
+-- 🏆 Global Hitbox Settings
+_G.HitboxSettings = {
+    Size = Vector3.new(30, 30, 30),
+    Transparency = 0.5,
+    HideHead = true,
+    HideFace = true
 }
 
 -- 📜 Function to Load Scripts
@@ -36,15 +44,16 @@ local function loadScript(url)
     end
 end
 
--- 🎯 Load Aimbot on Startup
+-- 🎯 Load Aimbot & Hitbox Scripts on Startup
 loadScript(scripts.Aimbot)
+loadScript(scripts.HeadHitbox)
 
 -- 🖥 UI Creation
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = CoreGui
 
 local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 250, 0, 400)
+frame.Size = UDim2.new(0, 250, 0, 430) -- Increased height
 frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 
@@ -98,6 +107,7 @@ aimKeyDropdown.Size = UDim2.new(1, -10, 0, 30)
 aimKeyDropdown.Text = "Aim Key: RMB"
 aimKeyDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 aimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+aimKeyDropdown.Parent = frame
 
 aimKeyDropdown.MouseButton1Click:Connect(function()
     keyIndex = (keyIndex % #keyOptions) + 1

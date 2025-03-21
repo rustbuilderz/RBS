@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- 🛠 Global Settings (Can be modified from main.lua)
+_G.HitboxEnabled = _G.HitboxEnabled or false -- Controls execution
 _G.HitboxSize = _G.HitboxSize or Vector3.new(30, 30, 30) -- Default size
 _G.HitboxTransparency = _G.HitboxTransparency or 0.2 -- Default transparency (0 = visible, 1 = invisible)
 _G.HideHead = _G.HideHead or true -- Hide the head
@@ -45,12 +46,14 @@ local function ModifyHitbox(character)
     end
 end
 
--- 🔄 Loop to Continuously Apply Changes
+-- 🔄 Loop to Continuously Apply Changes **ONLY WHEN ENABLED**
 RunService.RenderStepped:Connect(function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-            if player.Character.Humanoid.Health > 0 then -- Ensure player is alive
-                ModifyHitbox(player.Character) -- Apply changes
+    if _G.HitboxEnabled then -- ✅ Only run when Hitbox is enabled
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                if player.Character.Humanoid.Health > 0 then -- Ensure player is alive
+                    ModifyHitbox(player.Character) -- Apply changes
+                end
             end
         end
     end

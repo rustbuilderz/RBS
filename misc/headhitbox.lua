@@ -6,7 +6,7 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 local MenuVisible = true -- UI starts visible
 
-print("[DEBUG] Head Hitbox Script Loaded - Running...")
+print("[DEBUG] Head Hitbox Script Loaded - Running...PLEASEWORKSDAWDA)
 
 -- // 🎨 DEFAULT SETTINGS
 local HitboxSize = Vector3.new(21, 21, 21)

@@ -13,17 +13,17 @@ local scripts = {
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
 
--- 🎯 Default Aimbot Settings (Global)
+-- 🎯 Global Aimbot Settings
 _G.AimbotSettings = {
     Enabled = true,
-    AimKey = Enum.UserInputType.MouseButton2, -- Default: Right Click
+    AimKey = Enum.UserInputType.MouseButton2,
     FOV = 100,
     LockStrength = 0.8,
     PredictionFactor = 0.08,
     TargetPart = "Head"
 }
 
--- 🔄 Function to Load External Scripts
+-- 📜 Function to Load Scripts
 local function loadScript(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
@@ -36,30 +36,27 @@ local function loadScript(url)
     end
 end
 
--- 🎯 Auto-load Aimbot on Startup
+-- 🎯 Load Aimbot on Startup
 loadScript(scripts.Aimbot)
 
--- 🛠 UI Setup
+-- 🖥 UI Creation
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = CoreGui
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 360) -- Increased height
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 250, 0, 400)
 frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.Parent = screenGui
 
-local uiListLayout = Instance.new("UIListLayout")
-uiListLayout.Parent = frame
+local uiListLayout = Instance.new("UIListLayout", frame)
 
--- 🖥 Create Buttons for Scripts
+-- 🖥 Create Script Buttons
 local function createButton(text, scriptUrl)
-    local button = Instance.new("TextButton")
+    local button = Instance.new("TextButton", frame)
     button.Size = UDim2.new(1, 0, 0, 30)
     button.Text = text
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Parent = frame
 
     button.MouseButton1Click:Connect(function()
         loadScript(scriptUrl)
@@ -70,7 +67,7 @@ for name, url in pairs(scripts) do
     createButton(name, url)
 end
 
--- 📌 Dropdown for Aim Body Part
+-- 📌 Target Body Part Dropdown
 local bodyParts = {"Head", "Torso", "HumanoidRootPart"}
 local currentPartIndex = 1
 
@@ -86,9 +83,7 @@ bodyPartDropdown.MouseButton1Click:Connect(function()
     bodyPartDropdown.Text = "Target: " .. _G.AimbotSettings.TargetPart
 end)
 
-bodyPartDropdown.Parent = frame
-
--- 📌 Dropdown for Aim Key
+-- 📌 Aim Key Selection Dropdown
 local AimKeys = {
     ["F"] = Enum.KeyCode.F,
     ["RMB"] = Enum.UserInputType.MouseButton2,
@@ -98,21 +93,19 @@ local AimKeys = {
 local keyOptions = {"F", "RMB", "CTRL"}
 local keyIndex = 2
 
-local AimKeyDropdown = Instance.new("TextButton", frame)
-AimKeyDropdown.Size = UDim2.new(1, -10, 0, 30)
-AimKeyDropdown.Text = "Aim Key: RMB"
-AimKeyDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-AimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+local aimKeyDropdown = Instance.new("TextButton", frame)
+aimKeyDropdown.Size = UDim2.new(1, -10, 0, 30)
+aimKeyDropdown.Text = "Aim Key: RMB"
+aimKeyDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+aimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-AimKeyDropdown.MouseButton1Click:Connect(function()
+aimKeyDropdown.MouseButton1Click:Connect(function()
     keyIndex = (keyIndex % #keyOptions) + 1
     local selectedKey = keyOptions[keyIndex]
 
     _G.AimbotSettings.AimKey = AimKeys[selectedKey]
-    AimKeyDropdown.Text = "Aim Key: " .. selectedKey
+    aimKeyDropdown.Text = "Aim Key: " .. selectedKey
 end)
-
-AimKeyDropdown.Parent = frame
 
 -- 🔧 Create Sliders for Settings
 local function createSlider(name, min, max, default, settingKey)
@@ -148,8 +141,6 @@ local function createSlider(name, min, max, default, settingKey)
             slider.Text = tostring(default)
         end
     end)
-
-    sliderFrame.Parent = frame
 end
 
 createSlider("FOV", 10, 500, _G.AimbotSettings.FOV, "FOV")
@@ -157,16 +148,14 @@ createSlider("Lock Strength", 0.1, 1, _G.AimbotSettings.LockStrength, "LockStren
 createSlider("Prediction", 0, 0.2, _G.AimbotSettings.PredictionFactor, "PredictionFactor")
 
 -- 🔘 Toggle Aimbot
-local ToggleButton = Instance.new("TextButton", frame)
-ToggleButton.Size = UDim2.new(1, -10, 0, 30)
-ToggleButton.Text = "Aimbot: ON"
-ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+local toggleButton = Instance.new("TextButton", frame)
+toggleButton.Size = UDim2.new(1, -10, 0, 30)
+toggleButton.Text = "Aimbot: ON"
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-ToggleButton.MouseButton1Click:Connect(function()
+toggleButton.MouseButton1Click:Connect(function()
     _G.AimbotSettings.Enabled = not _G.AimbotSettings.Enabled
-    ToggleButton.Text = "Aimbot: " .. (_G.AimbotSettings.Enabled and "ON" or "OFF")
-    ToggleButton.BackgroundColor3 = _G.AimbotSettings.Enabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    toggleButton.Text = "Aimbot: " .. (_G.AimbotSettings.Enabled and "ON" or "OFF")
+    toggleButton.BackgroundColor3 = _G.AimbotSettings.Enabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
 end)
-
-ToggleButton.Parent = frame

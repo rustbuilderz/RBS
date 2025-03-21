@@ -87,20 +87,21 @@ bodyPartDropdown.MouseButton1Click:Connect(function()
 end)
 
 -- 📌 Dropdown for Aim Key
-local AimKeys = {["F"] = Enum.KeyCode.F, ["RMB"] = Enum.UserInputType.MouseButton2, ["CTRL"] = Enum.KeyCode.LeftControl}
+local AimKeys = {
+    ["F"] = Enum.KeyCode.F,
+    ["RMB"] = Enum.UserInputType.MouseButton2,
+    ["CTRL"] = Enum.KeyCode.LeftControl
+}
+
 local keyOptions = {"F", "RMB", "CTRL"}
-local currentKeyIndex = 2
+local keyIndex = 2
 
-local aimKeyDropdown = Instance.new("TextButton", frame)
-aimKeyDropdown.Size = UDim2.new(1, -10, 0, 30)
-aimKeyDropdown.Text = "Aim Key: RMB"
-aimKeyDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-aimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimKeyDropdown.MouseButton1Click:Connect(function()
+    keyIndex = (keyIndex % #keyOptions) + 1
+    local selectedKey = keyOptions[keyIndex]
 
-aimKeyDropdown.MouseButton1Click:Connect(function()
-    currentKeyIndex = (currentKeyIndex % #keyOptions) + 1
-    _G.AimbotSettings.AimKey = AimKeys[keyOptions[currentKeyIndex]]
-    aimKeyDropdown.Text = "Aim Key: " .. keyOptions[currentKeyIndex]
+    AimSettings.AimKey = AimKeys[selectedKey]
+    AimKeyDropdown.Text = "Aim Key: " .. selectedKey
 end)
 
 -- 🔧 Create Sliders for Settings

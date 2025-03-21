@@ -3,10 +3,8 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- 🛠 Function to Modify Hitboxes
+-- 🛠 Hitbox Modification Function (Runs in a Loop)
 local function ModifyHitbox()
-    print("[DEBUG] Modifying Hitboxes...")
-    
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
             if player.Character.Humanoid.Health > 0 then -- Ensure player is alive
@@ -40,8 +38,7 @@ local function ModifyHitbox()
             end
         end
     end
-    
-    print("[DEBUG] Hitbox Modification Complete!")
 end
 
-return ModifyHitbox
+-- 🔄 Start Loop Automatically
+RunService.RenderStepped:Connect(ModifyHitbox)

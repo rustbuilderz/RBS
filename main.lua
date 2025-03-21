@@ -1,5 +1,4 @@
 -- ⚙ Services
-local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 
 print("[DEBUG] Script Loaded - Initializing UI...")
@@ -11,7 +10,7 @@ local scripts = {
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua",
-    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua" -- Added Head Hitbox script
+    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"
 }
 
 -- 📜 Function to Load Scripts On Demand
@@ -39,7 +38,7 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 500)
+frame.Size = UDim2.new(0, 250, 0, 250) -- Adjusted size to fit buttons
 frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 2
@@ -72,15 +71,17 @@ local function createButton(text, callback)
     end
 end
 
--- 🔘 Create Buttons for Script Loading (Only Loads on Click)
+-- 🔘 Create Buttons for Features
 for name, url in pairs(scripts) do
-    createButton("Load " .. name, function()
-        print("[DEBUG] Button Clicked:", name)
-        loadScript(url)
-    end)
+    if name ~= "HeadHitbox" then -- Ensure the Head Hitbox button is separate
+        createButton("Load " .. name, function()
+            print("[DEBUG] Button Clicked:", name)
+            loadScript(url)
+        end)
+    end
 end
 
--- 🏆 **Special Button for Head Hitbox**
+-- 🔘 Single Button for Head Hitbox
 createButton("Enable Head Hitbox", function()
     print("[DEBUG] Button Clicked: Enable Head Hitbox")
     loadScript(scripts.HeadHitbox)

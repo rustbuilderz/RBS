@@ -1,9 +1,8 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
-print("load")
 
--- Ensure UI can be parented
+-- Ensure UI can be parented correctly
 local function getUIParent()
     return LocalPlayer:FindFirstChildOfClass("PlayerGui") or game:GetService("CoreGui")
 end
@@ -49,14 +48,14 @@ local function loadScript(url)
     end
 end
 
--- 🎯 Load Aimbot & Hitbox Scripts on Startup
+-- 🎯 Load Scripts on Startup
 task.spawn(function()
     loadScript(scripts.Aimbot)
     loadScript(scripts.HeadHitbox)
 end)
 
 -- 🖥 UI Creation
-task.wait(0.1) -- Prevents UI race condition
+task.wait(0.1) -- Prevent race condition
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AimbotUI"
@@ -64,9 +63,11 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = getUIParent()
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 430) -- UI Size
+frame.Size = UDim2.new(0, 250, 0, 430)
 frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Active = true
+frame.Draggable = true
 frame.Parent = screenGui
 
 local uiListLayout = Instance.new("UIListLayout")
@@ -79,7 +80,8 @@ local function createButton(text, scriptUrl)
     button.Text = text
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Parent = frame -- Ensures frame exists before parenting
+    button.Active = true
+    button.Parent = frame
 
     button.MouseButton1Click:Connect(function()
         loadScript(scriptUrl)
@@ -102,6 +104,7 @@ bodyPartDropdown.Size = UDim2.new(1, -10, 0, 30)
 bodyPartDropdown.Text = "Target: " .. _G.AimbotSettings.TargetPart
 bodyPartDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 bodyPartDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+bodyPartDropdown.Active = true
 bodyPartDropdown.Parent = frame
 
 bodyPartDropdown.MouseButton1Click:Connect(function()
@@ -125,6 +128,7 @@ aimKeyDropdown.Size = UDim2.new(1, -10, 0, 30)
 aimKeyDropdown.Text = "Aim Key: RMB"
 aimKeyDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 aimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+aimKeyDropdown.Active = true
 aimKeyDropdown.Parent = frame
 
 aimKeyDropdown.MouseButton1Click:Connect(function()
@@ -135,50 +139,13 @@ aimKeyDropdown.MouseButton1Click:Connect(function()
     aimKeyDropdown.Text = "Aim Key: " .. selectedKey
 end)
 
--- 🔧 Create Sliders for Settings
-local function createSlider(name, min, max, default, settingKey)
-    local sliderFrame = Instance.new("Frame")
-    sliderFrame.Size = UDim2.new(1, 0, 0, 50)
-    sliderFrame.BackgroundTransparency = 1
-    sliderFrame.Parent = frame
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 20)
-    label.Text = name .. ": " .. default
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.BackgroundTransparency = 1
-    label.Parent = sliderFrame
-
-    local slider = Instance.new("TextBox")
-    slider.Size = UDim2.new(1, -10, 0, 20)
-    slider.Position = UDim2.new(0, 5, 0, 25)
-    slider.Text = tostring(default)
-    slider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    slider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    slider.Parent = sliderFrame
-
-    slider.FocusLost:Connect(function()
-        local newValue = tonumber(slider.Text)
-        if newValue then
-            newValue = math.clamp(newValue, min, max)
-            _G.AimbotSettings[settingKey] = newValue
-            slider.Text = tostring(newValue)
-            label.Text = name .. ": " .. newValue
-        else
-            slider.Text = tostring(default)
-        end
-    end)
-end
-
-createSlider("FOV", 10, 500, _G.AimbotSettings.FOV, "FOV")
-createSlider("Lock Strength", 0.1, 1, _G.AimbotSettings.LockStrength, "LockStrength")
-createSlider("Prediction", 0, 0.2, _G.AimbotSettings.PredictionFactor, "PredictionFactor")
-
 -- 🔘 Toggle Aimbot
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(1, -10, 0, 30)
 toggleButton.Text = "Aimbot: ON"
 toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Active = true
 toggleButton.Parent = frame
 
 toggleButton.MouseButton1Click:Connect(function()
@@ -186,3 +153,5 @@ toggleButton.MouseButton1Click:Connect(function()
     toggleButton.Text = "Aimbot: " .. (_G.AimbotSettings.Enabled and "ON" or "OFF")
     toggleButton.BackgroundColor3 = _G.AimbotSettings.Enabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
 end)
+
+-- ✅ UI is now selectable & draggable!

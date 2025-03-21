@@ -1,7 +1,12 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
+print("load")
+
+-- Ensure UI can be parented
+local function getUIParent()
+    return LocalPlayer:FindFirstChildOfClass("PlayerGui") or game:GetService("CoreGui")
+end
 
 -- ⚙ Script URLs
 local scripts = {
@@ -56,7 +61,7 @@ task.wait(0.1) -- Prevents UI race condition
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AimbotUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = CoreGui or LocalPlayer:FindFirstChild("PlayerGui")
+screenGui.Parent = getUIParent()
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 430) -- UI Size
@@ -74,7 +79,7 @@ local function createButton(text, scriptUrl)
     button.Text = text
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Parent = frame
+    button.Parent = frame -- Ensures frame exists before parenting
 
     button.MouseButton1Click:Connect(function()
         loadScript(scriptUrl)

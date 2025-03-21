@@ -11,7 +11,7 @@ local scripts = {
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua",
-    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"
+    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua" -- Added Head Hitbox script
 }
 
 -- 📜 Function to Load Scripts On Demand
@@ -79,6 +79,12 @@ for name, url in pairs(scripts) do
         loadScript(url)
     end)
 end
+
+-- 🏆 **Special Button for Head Hitbox**
+createButton("Enable Head Hitbox", function()
+    print("[DEBUG] Button Clicked: Enable Head Hitbox")
+    loadScript(scripts.HeadHitbox)
+end)
 
 -- 📌 Keep UI on Top (Reparent if it gets lost)
 task.spawn(function()

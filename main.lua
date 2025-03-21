@@ -13,7 +13,7 @@ local scripts = {
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
 
--- 🎯 Default Aimbot Settings
+-- 🎯 Default Aimbot Settings (Global)
 _G.AimbotSettings = {
     Enabled = true,
     AimKey = Enum.UserInputType.MouseButton2, -- Default: Right Click
@@ -23,6 +23,7 @@ _G.AimbotSettings = {
     TargetPart = "Head"
 }
 
+-- 🔄 Function to Load External Scripts
 local function loadScript(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
@@ -35,8 +36,7 @@ local function loadScript(url)
     end
 end
 
-
--- 🎯 Load Aimbot on Startup
+-- 🎯 Auto-load Aimbot on Startup
 loadScript(scripts.Aimbot)
 
 -- 🛠 UI Setup
@@ -86,6 +86,8 @@ bodyPartDropdown.MouseButton1Click:Connect(function()
     bodyPartDropdown.Text = "Target: " .. _G.AimbotSettings.TargetPart
 end)
 
+bodyPartDropdown.Parent = frame
+
 -- 📌 Dropdown for Aim Key
 local AimKeys = {
     ["F"] = Enum.KeyCode.F,
@@ -96,13 +98,21 @@ local AimKeys = {
 local keyOptions = {"F", "RMB", "CTRL"}
 local keyIndex = 2
 
+local AimKeyDropdown = Instance.new("TextButton", frame)
+AimKeyDropdown.Size = UDim2.new(1, -10, 0, 30)
+AimKeyDropdown.Text = "Aim Key: RMB"
+AimKeyDropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+AimKeyDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+
 AimKeyDropdown.MouseButton1Click:Connect(function()
     keyIndex = (keyIndex % #keyOptions) + 1
     local selectedKey = keyOptions[keyIndex]
 
-    AimSettings.AimKey = AimKeys[selectedKey]
+    _G.AimbotSettings.AimKey = AimKeys[selectedKey]
     AimKeyDropdown.Text = "Aim Key: " .. selectedKey
 end)
+
+AimKeyDropdown.Parent = frame
 
 -- 🔧 Create Sliders for Settings
 local function createSlider(name, min, max, default, settingKey)
@@ -138,6 +148,8 @@ local function createSlider(name, min, max, default, settingKey)
             slider.Text = tostring(default)
         end
     end)
+
+    sliderFrame.Parent = frame
 end
 
 createSlider("FOV", 10, 500, _G.AimbotSettings.FOV, "FOV")
@@ -156,3 +168,5 @@ ToggleButton.MouseButton1Click:Connect(function()
     ToggleButton.Text = "Aimbot: " .. (_G.AimbotSettings.Enabled and "ON" or "OFF")
     ToggleButton.BackgroundColor3 = _G.AimbotSettings.Enabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
 end)
+
+ToggleButton.Parent = frame

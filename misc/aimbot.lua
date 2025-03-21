@@ -58,8 +58,14 @@ local function AimAtTarget(target)
 end
 
 RunService.RenderStepped:Connect(function()
-    if AimSettings.Enabled and UserInputService:IsMouseButtonPressed(AimSettings.AimKey) then
-        local target = GetClosestPlayer()
-        AimAtTarget(target)
+    if AimSettings.Enabled then
+        local aimKey = AimSettings.AimKey
+
+        if (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(aimKey)) or 
+           (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.UserInputType and UserInputService:IsMouseButtonPressed(aimKey)) then
+            local target = GetClosestPlayer()
+            AimAtTarget(target)
+        end
     end
 end)
+

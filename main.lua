@@ -66,20 +66,6 @@ local function ModifyHitbox(character)
     end
 end
 
--- 🔄 Constant Hitbox Modification Loop
-task.spawn(function()
-    while true do
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                if player.Character.Humanoid.Health > 0 then
-                    ModifyHitbox(player.Character)
-                end
-            end
-        end
-        task.wait(0.1) -- Runs every 0.1 seconds
-    end
-end)
-
 -- 🆕 Modify Players When They Spawn
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(character)

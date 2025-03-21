@@ -1,3 +1,5 @@
+-- ⚙ Services
+local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -22,7 +24,7 @@ local scripts = {
     Aimbot = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua",
     ESP = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua",
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
-    Hitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua",
+    Hitbox = nil, -- Handled internally, not a script
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }
@@ -41,6 +43,45 @@ local function loadScript(url)
     else
         warn("[ERROR] Failed to load script:", url)
     end
+end
+
+-- 🛠 Function to Modify Hitboxes
+local function ModifyHitbox()
+    print("[DEBUG] Modifying Hitboxes...")
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+            if player.Character.Humanoid.Health > 0 then -- Ensure player is alive
+                local hitboxParts = {
+                    "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", -- Standard parts
+                    "RightUpperLeg", "LeftUpperLeg", "RightLeg", "LeftLeg", -- Legs
+                    "HeadHB" -- Custom hitboxes (like Arsenal)
+                }
+
+                for _, partName in ipairs(hitboxParts) do
+                    local part = player.Character:FindFirstChild(partName)
+                    if part then
+                        part.CanCollide = false
+                        part.Transparency = 0.2
+                        part.Size = Vector3.new(30, 30, 30)
+                    end
+                end
+
+                -- Hide Head
+                local head = player.Character:FindFirstChild("Head")
+                if head then
+                    head.Transparency = 1
+                    head.CanCollide = false
+                end
+
+                -- Hide Face
+                local face = head and head:FindFirstChild("face")
+                if face then
+                    face.Transparency = 1
+                end
+            end
+        end
+    end
+    print("[DEBUG] Hitbox Modification Complete!")
 end
 
 -- 🖥 UI Creation
@@ -87,11 +128,19 @@ end
 
 -- 🔘 Create Buttons for Script Loading (Only Loads on Click)
 for name, url in pairs(scripts) do
-    createButton("Load " .. name, function()
-        print("[DEBUG] Button Clicked:", name)
-        loadScript(url)
-    end)
+    if url then
+        createButton("Load " .. name, function()
+            print("[DEBUG] Button Clicked:", name)
+            loadScript(url)
+        end)
+    end
 end
+
+-- 🔘 Special Button for Hitbox Modification
+createButton("Modify Hitbox", function()
+    print("[DEBUG] Button Clicked: Modify Hitbox")
+    ModifyHitbox()
+end)
 
 -- 📌 Keep UI on Top (Reparent if it gets lost)
 task.spawn(function()

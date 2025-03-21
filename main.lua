@@ -24,7 +24,7 @@ local scripts = {
     Aimbot = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua",
     ESP = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua",
     Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
-    Hitbox = nil, -- Handled internally, not a script
+    Hitbox = "https://github.com/rustbuilderz/RBS/main/misc/headhitbox.lua",
     InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
     Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua"
 }

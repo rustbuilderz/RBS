@@ -12,6 +12,15 @@ _G.settings = _G.settings or {
     headTransparency = 1,
 }
 
+_G.AimbotSettings = _G.AimbotSettings or {
+    Enabled = true,
+    AimKey = Enum.UserInputType.MouseButton2,
+    FOV = 100,
+    LockStrength = 0.8, -- Smoothing
+    PredictionFactor = 0.08,
+    TargetPart = "Head"
+}
+
 -- // 📜 SCRIPT URLS
 local scripts = {
     Aimbot = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua",
@@ -66,15 +75,17 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 title.BorderSizePixel = 0
 
+-- ✅ Scrollable UI to Prevent Overlapping
 local scrollingFrame = Instance.new("ScrollingFrame", frame)
 scrollingFrame.Size = UDim2.new(1, 0, 1, -45)
 scrollingFrame.Position = UDim2.new(0, 0, 0, 45)
-scrollingFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollingFrame.ScrollBarThickness = 5
 
 local layout = Instance.new("UIListLayout", scrollingFrame)
 layout.Padding = UDim.new(0, 5)
 
--- ✅ Create Button Function
 local function createButton(text, callback)
     local button = Instance.new("TextButton", scrollingFrame)
     button.Size = UDim2.new(1, 0, 0, 40)
@@ -86,7 +97,6 @@ local function createButton(text, callback)
     button.MouseButton1Click:Connect(callback)
 end
 
--- 📜 Load All Scripts as Buttons
 for name, url in pairs(scripts) do
     createButton("Load " .. name, function()
         loadScript(url)
@@ -95,14 +105,19 @@ end
 
 -- ✍ Customization Input Fields
 local function createTextBox(labelText, defaultValue, onTextChanged)
-    local label = Instance.new("TextLabel", scrollingFrame)
+    local container = Instance.new("Frame", scrollingFrame)
+    container.Size = UDim2.new(1, 0, 0, 60)
+    container.BackgroundTransparency = 1
+
+    local label = Instance.new("TextLabel", container)
     label.Size = UDim2.new(1, 0, 0, 25)
     label.Text = labelText
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.BackgroundTransparency = 1
 
-    local textBox = Instance.new("TextBox", scrollingFrame)
+    local textBox = Instance.new("TextBox", container)
     textBox.Size = UDim2.new(1, 0, 0, 30)
+    textBox.Position = UDim2.new(0, 0, 0, 25)
     textBox.Text = defaultValue
     textBox.ClearTextOnFocus = false
     textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -112,7 +127,7 @@ local function createTextBox(labelText, defaultValue, onTextChanged)
     end)
 end
 
--- 🎯 Update Head Hitbox Size
+-- 🎯 Head Hitbox Customization
 createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
     local values = {text:match("(%d+),(%d+),(%d+)")}
     if #values == 3 then
@@ -123,7 +138,6 @@ createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
     end
 end)
 
--- 🌫️ Update Head Transparency
 createTextBox("Head Transparency (0-1)", "1", function(text)
     local value = tonumber(text)
     if value and value >= 0 and value <= 1 then
@@ -131,6 +145,31 @@ createTextBox("Head Transparency (0-1)", "1", function(text)
         print("[DEBUG] Updated Head Transparency:", _G.settings.headTransparency)
     else
         warn("[ERROR] Invalid Transparency Value! Use a number between 0 and 1.")
+    end
+end)
+
+-- 🎯 Aimbot Settings
+createTextBox("Aimbot FOV", tostring(_G.AimbotSettings.FOV), function(text)
+    local value = tonumber(text)
+    if value and value > 0 then
+        _G.AimbotSettings.FOV = value
+        print("[DEBUG] Updated Aimbot FOV:", _G.AimbotSettings.FOV)
+    end
+end)
+
+createTextBox("Aimbot Lock Strength (0-1)", tostring(_G.AimbotSettings.LockStrength), function(text)
+    local value = tonumber(text)
+    if value and value >= 0 and value <= 1 then
+        _G.AimbotSettings.LockStrength = value
+        print("[DEBUG] Updated Aimbot Lock Strength:", _G.AimbotSettings.LockStrength)
+    end
+end)
+
+createTextBox("Aimbot Prediction Factor", tostring(_G.AimbotSettings.PredictionFactor), function(text)
+    local value = tonumber(text)
+    if value and value >= 0 then
+        _G.AimbotSettings.PredictionFactor = value
+        print("[DEBUG] Updated Aimbot Prediction Factor:", _G.AimbotSettings.PredictionFactor)
     end
 end)
 

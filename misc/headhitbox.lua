@@ -5,23 +5,25 @@ local LocalPlayer = Players.LocalPlayer
 
 print("[DEBUG] Head Hitbox Script Loaded - Running...")
 
--- 🛠 Function to Modify Head Hitbox and Hide Face
+-- 🛠 Function to Modify Head Hitbox and Hide All Heads
 local function ModifyHeadHitbox(character)
     if not character then return end
 
-    local head = character:FindFirstChild("Head")
-    if head then
-        head.Size = Vector3.new(21, 21, 21) -- Enlarged Head Hitbox
-        head.CanCollide = false
-        head.Massless = true
-        
-        -- Hide Face
-        local face = head:FindFirstChild("face")
-        if face then
-            face.Transparency = 1
-        end
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") and string.find(part.Name:lower(), "head") then
+            part.Size = Vector3.new(21, 21, 21) -- Enlarged Head Hitbox
+            part.CanCollide = false
+            part.Massless = true
+            part.Transparency = 1 -- Makes all head parts invisible
+            
+            -- Hide Face if Exists
+            local face = part:FindFirstChild("face")
+            if face then
+                face.Transparency = 1
+            end
 
-        print("[DEBUG] Head Hitbox & Face Modified for:", character.Name)
+            print("[DEBUG] Head Hitbox & Face Modified for:", character.Name)
+        end
     end
 end
 

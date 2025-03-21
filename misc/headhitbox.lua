@@ -34,18 +34,19 @@ local function ModifyHitbox(character)
     if face then
         face.Transparency = 1
     end
-
-    print("[DEBUG] Hitbox Modification Applied!")
 end
 
--- 🔄 Loop to Continuously Apply Changes
-RunService.RenderStepped:Connect(function()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-            if player.Character.Humanoid.Health > 0 then
-                ModifyHitbox(player.Character)
+-- 🔄 Apply Modifications on Loop
+task.spawn(function()
+    while true do
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                if player.Character.Humanoid.Health > 0 then
+                    ModifyHitbox(player.Character)
+                end
             end
         end
+        task.wait(0.1) -- Small delay to prevent unnecessary CPU usage
     end
 end)
 

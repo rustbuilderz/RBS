@@ -22,7 +22,7 @@ local scripts = {
     HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"
 }
 
--- Function to load scripts dynamically
+-- 🚀 Function to load scripts dynamically
 local function loadScript(url)
     if not url or url == "" then
         warn("[ERROR] Invalid Script URL!")
@@ -39,7 +39,7 @@ local function loadScript(url)
     if not executed then
         warn("[ERROR] Execution Failed:", errorMsg)
     else
-        print("[DEBUG] Script Executed Successfully.")
+        print("[DEBUG] Script Executed Successfully:", url)
     end
 end
 
@@ -73,6 +73,7 @@ scrollingFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
 
 local layout = Instance.new("UIListLayout", scrollingFrame)
 
+-- ✅ Create Button Function
 local function createButton(text, callback)
     local button = Instance.new("TextButton", scrollingFrame)
     button.Size = UDim2.new(1, 0, 0, 40)
@@ -84,20 +85,21 @@ local function createButton(text, callback)
     button.MouseButton1Click:Connect(callback)
 end
 
+-- 📜 Load All Scripts as Buttons
 for name, url in pairs(scripts) do
     createButton("Load " .. name, function()
         loadScript(url)
     end)
 end
 
--- Customization Inputs
+-- ✍ Customization Input Fields
 local function createTextBox(labelText, defaultValue, onTextChanged)
     local label = Instance.new("TextLabel", scrollingFrame)
     label.Size = UDim2.new(1, 0, 0, 30)
     label.Text = labelText
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.BackgroundTransparency = 1
-    
+
     local textBox = Instance.new("TextBox", scrollingFrame)
     textBox.Size = UDim2.new(1, 0, 0, 30)
     textBox.Text = defaultValue
@@ -109,6 +111,7 @@ local function createTextBox(labelText, defaultValue, onTextChanged)
     end)
 end
 
+-- 🎯 Update Head Hitbox Size
 createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
     local values = {text:match("(%d+),(%d+),(%d+)")}
     if #values == 3 then
@@ -117,6 +120,7 @@ createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
     end
 end)
 
+-- 🌫️ Update Head Transparency
 createTextBox("Head Transparency (0-1)", "1", function(text)
     local value = tonumber(text)
     if value and value >= 0 and value <= 1 then
@@ -125,7 +129,7 @@ createTextBox("Head Transparency (0-1)", "1", function(text)
     end
 end)
 
--- Toggle UI Visibility with Insert Key
+-- 🔄 Toggle UI Visibility with Insert Key
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Insert then

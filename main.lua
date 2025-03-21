@@ -28,11 +28,13 @@ local function loadScript(url)
         return game:HttpGet(url)
     end)
     if success then
+        print("[DEBUG] Loaded: " .. url)
         loadstring(response)()
     else
-        warn("Failed to load script:", url)
+        warn("[ERROR] Failed to load script: " .. url)
     end
 end
+
 
 -- 🎯 Load Aimbot on Startup
 loadScript(scripts.Aimbot)

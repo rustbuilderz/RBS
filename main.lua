@@ -72,6 +72,7 @@ scrollingFrame.Position = UDim2.new(0, 0, 0, 45)
 scrollingFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
 
 local layout = Instance.new("UIListLayout", scrollingFrame)
+layout.Padding = UDim.new(0, 5)
 
 -- ✅ Create Button Function
 local function createButton(text, callback)
@@ -95,7 +96,7 @@ end
 -- ✍ Customization Input Fields
 local function createTextBox(labelText, defaultValue, onTextChanged)
     local label = Instance.new("TextLabel", scrollingFrame)
-    label.Size = UDim2.new(1, 0, 0, 30)
+    label.Size = UDim2.new(1, 0, 0, 25)
     label.Text = labelText
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.BackgroundTransparency = 1
@@ -117,6 +118,8 @@ createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
     if #values == 3 then
         _G.settings.headHitboxSize = Vector3.new(tonumber(values[1]), tonumber(values[2]), tonumber(values[3]))
         print("[DEBUG] Updated Head Hitbox Size:", _G.settings.headHitboxSize)
+    else
+        warn("[ERROR] Invalid Head Hitbox Format! Use: X,Y,Z")
     end
 end)
 
@@ -126,6 +129,8 @@ createTextBox("Head Transparency (0-1)", "1", function(text)
     if value and value >= 0 and value <= 1 then
         _G.settings.headTransparency = value
         print("[DEBUG] Updated Head Transparency:", _G.settings.headTransparency)
+    else
+        warn("[ERROR] Invalid Transparency Value! Use a number between 0 and 1.")
     end
 end)
 

@@ -4,6 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
+-- Load Global Aimbot Settings
 local AimSettings = _G.AimbotSettings or {
     Enabled = true,
     AimKey = Enum.UserInputType.MouseButton2,
@@ -32,7 +33,7 @@ local function GetClosestPlayer()
                     local dist = (Vector2.new(screenPos.X, screenPos.Y) - UserInputService:GetMouseLocation()).Magnitude
                     if dist < closestDist then
                         closestDist = dist
-                        closestPlayer = predictedPos
+                        closestPlayer = player -- Store the player, not just position
                     end
                 end
             end
@@ -42,18 +43,25 @@ local function GetClosestPlayer()
     return closestPlayer
 end
 
-local function AimAtTarget(target)
-    if target then
-        local targetPos = Camera:WorldToViewportPoint(target)
-        local mousePos = UserInputService:GetMouseLocation()
+local function AimAtTarget(player)
+    if player and player.Character and player.Character:FindFirstChild(AimSettings.TargetPart) then
+        local part = player.Character[AimSettings.TargetPart]
+        local root = player.Character:FindFirstChild("HumanoidRootPart")
 
-        local moveX = (targetPos.X - mousePos.X) * AimSettings.LockStrength
-        local moveY = (targetPos.Y - mousePos.Y) * AimSettings.LockStrength
+        if root then
+            local velocity = root.Velocity * AimSettings.PredictionFactor
+            local predictedPos = part.Position + velocity
+            local targetPos = Camera:WorldToViewportPoint(predictedPos)
 
-        moveX = math.clamp(moveX, -4, 4)
-        moveY = math.clamp(moveY, -4, 4)
+            local mousePos = UserInputService:GetMouseLocation()
+            local moveX = (targetPos.X - mousePos.X) * AimSettings.LockStrength
+            local moveY = (targetPos.Y - mousePos.Y) * AimSettings.LockStrength
 
-        mousemoverel(moveX, moveY)
+            moveX = math.clamp(moveX, -5, 5)
+            moveY = math.clamp(moveY, -5, 5)
+
+            mousemoverel(moveX, moveY)
+        end
     end
 end
 
@@ -61,11 +69,12 @@ RunService.RenderStepped:Connect(function()
     if AimSettings.Enabled then
         local aimKey = AimSettings.AimKey
 
-        if (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(aimKey)) or 
-           (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.UserInputType and UserInputService:IsMouseButtonPressed(aimKey)) then
+        local isKeyDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(aimKey))
+        local isMouseDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.UserInputType and UserInputService:IsMouseButtonPressed(aimKey))
+
+        if isKeyDown or isMouseDown then
             local target = GetClosestPlayer()
             AimAtTarget(target)
         end
     end
 end)
-

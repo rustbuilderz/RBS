@@ -9,22 +9,35 @@ print("[DEBUG] Head Hitbox Script Loaded - Running...")
 local function ModifyHeadHitbox(character)
     if not character then return end
 
-    for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") and string.find(part.Name:lower(), "head") then
-            part.Size = Vector3.new(21, 21, 21) -- Enlarged Head Hitbox
-            part.CanCollide = false
-            part.Massless = true
-            part.Transparency = 1 -- Makes all head parts invisible
-            
-            -- Hide Face if Exists
-            local face = part:FindFirstChild("face")
-            if face then
-                face.Transparency = 1
-            end
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid then return end
 
-            print("[DEBUG] Head Hitbox & Face Modified for:", character.Name)
+    -- Detect R6 and R15 Head Types
+    local head = character:FindFirstChild("Head") -- R6 & R15
+    local meshHead = character:FindFirstChildOfClass("MeshPart") -- UGC & Custom Heads
+
+    -- Modify R6/R15 Standard Head
+    if head and head:IsA("BasePart") then
+        head.Size = Vector3.new(21, 21, 21) -- Enlarged Head Hitbox
+        head.CanCollide = false
+        head.Massless = true
+        head.Transparency = 1 -- Makes the head invisible
+
+        -- Hide Face if Exists
+        local face = head:FindFirstChild("face")
+        if face then
+            face.Transparency = 1
         end
     end
+
+    -- Modify UGC / Custom Mesh Heads
+    if meshHead and meshHead:IsA("MeshPart") then
+        meshHead.Transparency = 1 -- Make Mesh Head Invisible
+        meshHead.CanCollide = false
+        meshHead.Massless = true
+    end
+
+    print("[DEBUG] Head Modified for:", character.Name)
 end
 
 -- 🔄 Loop to Constantly Modify Head Hitbox

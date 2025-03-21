@@ -48,8 +48,8 @@ screenGui.Parent = CoreGui
 
 -- // 🖼 MAIN FRAME
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 260, 0, 320) -- Adjusted size for better layout
-frame.Position = UDim2.new(0.05, 0, 0.05, 0) -- Position in top-left
+frame.Size = UDim2.new(0, 300, 0, 350) -- Wider layout
+frame.Position = UDim2.new(0.05, 0, 0.05, 0)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.BorderSizePixel = 2
 frame.Active = true
@@ -57,25 +57,45 @@ frame.Draggable = true
 frame.ZIndex = 10
 frame.Parent = screenGui
 
-print("[DEBUG] UI Created!")
+-- // 📌 UI TITLE
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Text = "🔥 Cheat Menu 🔥"
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.BorderSizePixel = 0
+title.Parent = frame
 
--- // 📌 UI LAYOUT
-local uiListLayout = Instance.new("UIListLayout")
-uiListLayout.Padding = UDim.new(0, 5) -- Adds spacing between buttons
-uiListLayout.Parent = frame
+-- // 📜 SCROLLING FRAME
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, 0, 1, -45)
+scrollingFrame.Position = UDim2.new(0, 0, 0, 45)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
+scrollingFrame.Parent = frame
+
+-- // 📌 UI LAYOUT (GRID)
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 140, 0, 40) -- Buttons in 2 columns
+gridLayout.CellPadding = UDim2.new(0, 10, 0, 10)
+gridLayout.Parent = scrollingFrame
+
+print("[DEBUG] UI Created!")
 
 -- // 🔘 FUNCTION TO CREATE BUTTONS
 local function createButton(text, callback)
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 0, 35)
+    button.Size = UDim2.new(0, 130, 0, 40) -- Uniform button size
     button.Text = text
     button.Font = Enum.Font.SourceSansBold
     button.TextSize = 18
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.BorderSizePixel = 1
-    button.ZIndex = 20
-    button.Parent = frame
+    button.Parent = scrollingFrame
 
     button.MouseButton1Click:Connect(callback)
     print("[DEBUG] Button Created:", text)

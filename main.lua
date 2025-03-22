@@ -4,7 +4,6 @@ local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-print("[DEBUG] Script Loaded - Initializing UI...")
 
 -- // 🌍 GLOBAL SETTINGS
 _G.settings = _G.settings or {
@@ -181,4 +180,3 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("[DEBUG] All Features Loaded & Running!")

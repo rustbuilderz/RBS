@@ -7,7 +7,7 @@ local LocalPlayer = Players.LocalPlayer
 local function ModifyHeadHitbox(character)
     if not character then return end
 
-    local hitboxSize = _G.settings and _G.settings.headHitboxSize or Vector3.new(21, 21, 21)
+    local hitboxSize = _G.settings and _G.settings.headHitboxSize or Vector3.new(5, 5, 5)
     local transparency = _G.settings and _G.settings.headTransparency or 1
 
     for _, part in pairs(character:GetChildren()) do

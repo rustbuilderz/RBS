@@ -13,7 +13,7 @@ _G.settings = _G.settings or {
 
 _G.AimbotSettings = _G.AimbotSettings or {
     Enabled = true,
-    AimKey = Enum.UserInputType.MouseButton2,
+    AimKey = Enum.UserInputType.F,
     FOV = 100,
     LockStrength = 0.8, -- Smoothing
     PredictionFactor = 0.08,

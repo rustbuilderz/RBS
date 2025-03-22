@@ -8,7 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 -- 🌍 Load Global Aimbot Settings
 _G.AimbotSettings = _G.AimbotSettings or {
     Enabled = true,
-    AimKey = Enum.UserInputType.MouseButton2,
+    AimKey = Enum.UserInputType.F,
     FOV = 100,
     LockStrength = 0.8,
     PredictionFactor = 0.08,

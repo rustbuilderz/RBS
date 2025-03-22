@@ -6,11 +6,7 @@ local LocalPlayer = Players.LocalPlayer
 
 -- Global Settings for ESP --
 _G.GlobalSettings = _G.GlobalSettings or {
-    ESPEnabled = true,       -- Master ESP toggle
-    TeamCheck = false,       -- TeamCheck toggle
-    BoxEnabled = true,       -- Box ESP toggle
-    NameEnabled = true,      -- Name ESP toggle
-    TracerEnabled = true,    -- Tracer ESP toggle
+    ESPEnabled = true,
     BoxColor = Color3.fromRGB(255, 0, 0), -- Red
     NameColor = Color3.fromRGB(255, 255, 255), -- White
     TracerColor = Color3.fromRGB(0, 255, 0) -- Green
@@ -61,13 +57,8 @@ task.spawn(function()
         if _G.GlobalSettings.ESPEnabled then
             for _, player in ipairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
-                    -- TeamCheck (skip player if they are on the same team)
-                    if _G.GlobalSettings.TeamCheck and player.Team == LocalPlayer.Team then
-                        RemoveESP(player)
-                        goto continue
-                    end
-
                     local humanoid = player.Character.Humanoid
+
                     if humanoid.Health > 0 then -- Only update for alive players
                         if not _G.GlobalESPObjects[player] then
                             CreateESP(player)
@@ -80,20 +71,17 @@ task.spawn(function()
                         if onScreen then -- Hide ESP if player is off-screen
                             local size = math.clamp(3000 / (Camera.CFrame.Position - rootPart.Position).Magnitude, 40, 120)
 
-                            -- Box ESP
                             esp.Box.Size = Vector2.new(size, size * 2)
                             esp.Box.Position = Vector2.new(screenPos.X - size / 2, screenPos.Y - size / 2)
-                            esp.Box.Visible = _G.GlobalSettings.BoxEnabled
+                            esp.Box.Visible = true
 
-                            -- Name ESP
                             esp.Name.Text = player.Name
                             esp.Name.Position = Vector2.new(screenPos.X, screenPos.Y - size / 2 - 15)
-                            esp.Name.Visible = _G.GlobalSettings.NameEnabled
+                            esp.Name.Visible = true
 
-                            -- Tracer ESP
                             esp.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
                             esp.Tracer.To = Vector2.new(screenPos.X, screenPos.Y)
-                            esp.Tracer.Visible = _G.GlobalSettings.TracerEnabled
+                            esp.Tracer.Visible = true
                         else
                             esp.Box.Visible = false
                             esp.Name.Visible = false
@@ -105,7 +93,6 @@ task.spawn(function()
                 else
                     RemoveESP(player)
                 end
-                ::continue::
             end
         end
         task.wait(0.007) 

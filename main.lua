@@ -47,7 +47,7 @@ local function loadScript(url)
     if not executed then
         warn("[ERROR] Execution Failed:", errorMsg)
     else
-        print("[DEBUG] Script Executed Successfully:", url)
+        print(".")
     end
 end
 

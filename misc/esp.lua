@@ -1,69 +1,70 @@
-
+-- Global Variables --
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
-
-local ESPSettings = {
-    Enabled = true,
+-- Global Settings for ESP --
+_G.GlobalSettings = _G.GlobalSettings or {
+    ESPEnabled = true,
     BoxColor = Color3.fromRGB(255, 0, 0), -- Red
     NameColor = Color3.fromRGB(255, 255, 255), -- White
     TracerColor = Color3.fromRGB(0, 255, 0) -- Green
 }
 
+-- Global ESP Objects --
+_G.GlobalESPObjects = _G.GlobalESPObjects or {}
 
-local ESPObjects = {}
-
-
+-- Create ESP for player --
 local function CreateESP(player)
-    if player == LocalPlayer or ESPObjects[player] then return end
+    if player == LocalPlayer or _G.GlobalESPObjects[player] then return end
 
     local box = Drawing.new("Square")
     local name = Drawing.new("Text")
     local tracer = Drawing.new("Line")
 
-    ESPObjects[player] = {Box = box, Name = name, Tracer = tracer}
+    _G.GlobalESPObjects[player] = {Box = box, Name = name, Tracer = tracer}
 
-    box.Color = ESPSettings.BoxColor
+    box.Color = _G.GlobalSettings.BoxColor
     box.Thickness = 2
     box.Filled = false
     box.Visible = false
 
-    name.Color = ESPSettings.NameColor
+    name.Color = _G.GlobalSettings.NameColor
     name.Size = 18
     name.Center = true
     name.Outline = true
     name.Visible = false
 
-    tracer.Color = ESPSettings.TracerColor
+    tracer.Color = _G.GlobalSettings.TracerColor
     tracer.Thickness = 1.5
     tracer.Visible = false
 end
 
+-- Remove ESP for player --
 local function RemoveESP(player)
-    if ESPObjects[player] then
-        for _, obj in pairs(ESPObjects[player]) do
+    if _G.GlobalESPObjects[player] then
+        for _, obj in pairs(_G.GlobalESPObjects[player]) do
             obj:Remove()
         end
-        ESPObjects[player] = nil
+        _G.GlobalESPObjects[player] = nil
     end
 end
 
-
+-- Update ESPs every frame --
 task.spawn(function()
     while true do
-        if ESPSettings.Enabled then
+        if _G.GlobalSettings.ESPEnabled then
             for _, player in ipairs(Players:GetPlayers()) do
                 if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
                     local humanoid = player.Character.Humanoid
 
                     if humanoid.Health > 0 then -- Only update for alive players
-                        if not ESPObjects[player] then
+                        if not _G.GlobalESPObjects[player] then
                             CreateESP(player)
                         end
 
-                        local esp = ESPObjects[player]
+                        local esp = _G.GlobalESPObjects[player]
                         local rootPart = player.Character.HumanoidRootPart
                         local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 
@@ -98,5 +99,5 @@ task.spawn(function()
     end
 end)
 
-
+-- Handle player removal --
 Players.PlayerRemoving:Connect(RemoveESP)

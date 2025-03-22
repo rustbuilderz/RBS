@@ -50,4 +50,3 @@ Players.PlayerAdded:Connect(function(player)
     end)
 end)
 
-print("[DEBUG] Head Hitbox Script Loaded & Running!")

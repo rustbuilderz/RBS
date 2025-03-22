@@ -83,4 +83,3 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-print("[DEBUG] Aimbot Script Loaded & Running!")

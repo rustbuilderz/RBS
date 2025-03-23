@@ -75,18 +75,28 @@ local function AimAtTarget(player)
     end
 end
 
--- 🚀 Main Aimbot Loop
 RunService.RenderStepped:Connect(function()
+    print("🔍 Aimbot Enabled:", _G.AimbotSettings.AimbotEnabled) -- ✅ Force debug print
+
     if _G.AimbotSettings.AimbotEnabled then
+        print("🎯 Aimbot is ACTIVE!") -- ✅ This should appear if enabled
+
         local aimKey = _G.AimbotSettings.AimKey
-        print("🎮 Aimbot Active | AimKey:", aimKey)
+        print("🎮 Listening for AimKey:", aimKey) -- ✅ Check if AimKey is valid
 
         local isKeyDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(aimKey))
         local isMouseDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.UserInputType and UserInputService:IsMouseButtonPressed(aimKey))
 
         if isKeyDown or isMouseDown then
+            print("🚀 Aim key detected! Searching for target...")
             local target = GetClosestPlayer()
-            AimAtTarget(target)
+
+            if target then
+                print("🎯 Target Found:", target.Name)
+                AimAtTarget(target)
+            else
+                print("❌ No valid target in range")
+            end
         end
     end
 end)

@@ -3,15 +3,16 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- 🌍 Global Silent Aim Toggle
+-- 🌍 Global Silent Aim & Hitbox Size Variables
 _G.SilentAimEnabled = _G.SilentAimEnabled or false
+_G.HeadHitboxSize = _G.HeadHitboxSize or Vector3.new(5, 5, 5) -- Default size
 
 -- 🛠 Function to Modify Head Hitbox Dynamically
 local function ModifyHeadHitbox(character)
     if not _G.SilentAimEnabled then return end -- Stop if SilentAim is disabled
     if not character then return end
 
-    local hitboxSize = _G.settings and _G.settings.headHitboxSize or Vector3.new(5, 5, 5)
+    local hitboxSize = _G.HeadHitboxSize -- Use global size
     local transparency = _G.settings and _G.settings.headTransparency or 1
 
     for _, part in pairs(character:GetChildren()) do

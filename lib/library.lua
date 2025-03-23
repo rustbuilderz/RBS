@@ -160,7 +160,7 @@ function Library:Main(GName)
     Logo.BorderSizePixel = 0
     Logo.Position = UDim2.new(0, 10, 0, 10)
     Logo.Size = UDim2.new(0, 35, 0, 35)
-    Logo.Image = "rbxassetid://6771656595"
+    Logo.Image = "rbxassetid://107961805648748"
 
     Name.Name = "Name"
     Name.Parent = MainBackground

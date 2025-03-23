@@ -74,21 +74,3 @@ _G.SetFly = ToggleFly
 _G.UpdateFlySpeed = UpdateFlySpeed
 
 print("✅ Fly Script Loaded Successfully")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- red

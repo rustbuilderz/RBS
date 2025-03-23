@@ -10,7 +10,7 @@ local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 _G.GlobalSettings = _G.GlobalSettings or {
     FlyEnabled = false,
     FlySpeed = 50,
-    FlyKeybind = Enum.KeyCode.E -- Default keybind (Changeable in UI)
+    FlyKeybind = Enum.KeyCode.F -- Default keybind (Changeable in UI)
 }
 
 -- ✈️ Fly Variables
@@ -79,10 +79,10 @@ local function UpdateMovement()
     movementDirection = Vector3.new(0, 0, 0)
 
     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-        movementDirection = movementDirection + Vector3.new(0, 0, -1)
+        movementDirection = movementDirection + Vector3.new(0, 0, 1) -- Fixed Direction
     end
     if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-        movementDirection = movementDirection + Vector3.new(0, 0, 1)
+        movementDirection = movementDirection + Vector3.new(0, 0, -1) -- Fixed Direction
     end
     if UserInputService:IsKeyDown(Enum.KeyCode.A) then
         movementDirection = movementDirection + Vector3.new(-1, 0, 0)
@@ -109,7 +109,7 @@ RunService.RenderStepped:Connect(function()
         UpdateMovement()
         local camDirection = workspace.CurrentCamera.CFrame.LookVector
         local rightVector = workspace.CurrentCamera.CFrame.RightVector
-        local moveVector = (camDirection * movementDirection.Z) + (rightVector * movementDirection.X) + (Vector3.new(0, 1, 0) * movementDirection.Y)
+        local moveVector = (camDirection * -movementDirection.Z) + (rightVector * movementDirection.X) + (Vector3.new(0, 1, 0) * movementDirection.Y)
 
         flyVelocity.Velocity = moveVector * _G.GlobalSettings.FlySpeed
         flyGyro.CFrame = workspace.CurrentCamera.CFrame

@@ -74,15 +74,15 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- 🎮 Handle Movement Input
-local function UpdateMovement()
-    movementDirection = Vector3.new(0, 0, 0)
+    -- 🎮 Handle Movement Input
+    local function UpdateMovement()
+        movementDirection = Vector3.new(0, 0, 0)
 
     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-        movementDirection = movementDirection + Vector3.new(0, 0, 1) -- Fixed Direction
+        movementDirection = movementDirection + Vector3.new(0, 0, -1) -- Move forward
     end
     if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-        movementDirection = movementDirection + Vector3.new(0, 0, -1) -- Fixed Direction
+        movementDirection = movementDirection + Vector3.new(0, 0, 1) -- Move backward
     end
     if UserInputService:IsKeyDown(Enum.KeyCode.A) then
         movementDirection = movementDirection + Vector3.new(-1, 0, 0)

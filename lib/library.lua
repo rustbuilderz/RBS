@@ -958,23 +958,11 @@ function Library:Main(GName)
         end
 
         function ItemLibrary:NewDropdown(DName, Items, callback, ShowItem, UseItem)
-
-            DName = tostring(DName or "Undefined")
+            DName = tostring(DName) or "undefined"
             callback = callback or function() end
-            Items = Items or {} -- Ensure it's a valid table
             ShowItem = ShowItem or false
-            UseItem = UseItem or Items[1] 
-
-            local Item = tostring(UseItem)
-
-
-            if not table.find(Items, Item) then
-                Item = Items[1] or "None"
-            end
-
-   
-            Config[TName] = Config[TName] or {} 
-            Config[TName][DName] = Item 
+            local Item = UseItem and UseItem or not UseItem and Items[1]
+            local Open = false
 
             pcall(callback, Item)
             Config[TName][DName] = tostring(v)

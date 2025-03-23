@@ -219,8 +219,6 @@ function Library:Main(GName)
 
     local FirstTab = true
     local Functions = {}
-    local Config = {}
-
     local TabLibrary = {}
 
     function TabLibrary:Notify(NText, Time)
@@ -359,7 +357,6 @@ function Library:Main(GName)
         TName = tostring(TName) or "undefined"
 
         Functions[TName] = {}
-        Config[TName] = {}
 
         local TabButton = Instance.new("Frame")
         local TabButtonUICorner = Instance.new("UICorner")
@@ -599,7 +596,6 @@ function Library:Main(GName)
                 ToggleToggle.BackgroundColor3 = Theme.Color2
             end
             pcall(callback, CurrentState)
-            Config[TName][TGName] = CurrentState
             ToggleToggle.BorderSizePixel = 0
             ToggleToggle.Position = UDim2.new(0, 271, 0, 3)
             ToggleToggle.Size = UDim2.new(0, 22, 0, 22)
@@ -611,7 +607,6 @@ function Library:Main(GName)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     CurrentState = not CurrentState
                     pcall(callback, CurrentState)
-                    Config[TName][TGName] = CurrentState
 
                     if not CurrentState then
                         ToggleToggle.BackgroundColor3 = Theme.Color1
@@ -736,7 +731,6 @@ function Library:Main(GName)
                     SliderValue.Text = string.format("%.14g", v)
                     Slider:TweenSize(UDim2.new((v - MinVal) / (MaxVal - MinVal), 0, 1, 0), "Out", "Quad", 0.05, true)
                     pcall(callback, tonumber(v))
-                    Config[TName][SName] = tonumber(v)
                 end
             end
 
@@ -799,7 +793,6 @@ function Library:Main(GName)
             Keep = Keep or false
             if tostring(Text) then
                 pcall(callback, tostring(Text))
-                Config[TName][TBName] = tostring(Text)
             end
             Text = tostring(Text) or "..."
 
@@ -856,7 +849,6 @@ function Library:Main(GName)
             TextBox.FocusLost:Connect(function()
                 if #TextBox.Text > 0 then
                     pcall(callback, TextBox.Text)
-                    Config[TName][TBName] = TextBox.Text
                     if not Keep then
                         TextBox.Text = ""
                         TextBox.PlaceholderText = "..."
@@ -868,7 +860,6 @@ function Library:Main(GName)
                 if #tostring(v) > 0 then
                     TextBox.Text = tostring(v)
                     pcall(callback, tostring(v))
-                    Config[TName][TBName] = tostring(v)
                     if not Keep then
                         TextBox.Text = ""
                         TextBox.PlaceholderText = "..."
@@ -883,7 +874,6 @@ function Library:Main(GName)
             KName = tostring(KName) or "undefined"
             callback = callback or function() end
             local CurrentKey = Key.Name
-            Config[TName][KName] = Key.Name
 
             local KeybindFrame = Instance.new("Frame")
             local KeybindFrameUICorner = Instance.new("UICorner")
@@ -943,14 +933,12 @@ function Library:Main(GName)
                 local i = zzUIS.InputBegan:wait()
                 Keybind.Text = "[ "..tostring((i.UserInputType == Enum.UserInputType.Keyboard and i.KeyCode.Name) or i.UserInputType.Name) .. " ]"
                 CurrentKey = tostring((i.UserInputType == Enum.UserInputType.Keyboard and i.KeyCode.Name) or i.UserInputType.Name)
-                Config[TName][KName] = (i.UserInputType == Enum.UserInputType.Keyboard and i.KeyCode.Name) or i.UserInputType.Name
                 wait()
                 IsFocused = false
             end)
             local KeybindLibrary = {}
             function KeybindLibrary:Set(v)
                 CurrentKey = tostring(v)
-                Config[TName][KName] = v
                 Keybind.Text = "[ " .. tostring(v) .. " ]"
             end
             Functions[TName][KName] = KeybindLibrary
@@ -965,7 +953,6 @@ function Library:Main(GName)
             local Open = false
 
             pcall(callback, Item)
-            Config[TName][DName] = tostring(v)
 
             local DropdownToggleFrame = Instance.new("Frame")
             local DropdownToggleFrameUICorner = Instance.new("UICorner")
@@ -1103,7 +1090,6 @@ function Library:Main(GName)
                         end
                         Item = tostring(v)
                         pcall(callback, tostring(v))
-                        Config[TName][DName] = tostring(v)
                         Ripple(Example)
                     end
                 end)
@@ -1141,7 +1127,6 @@ function Library:Main(GName)
                     end
                     Item = tostring(v)
                     pcall(callback, tostring(v))
-                    Config[TName][DName] = tostring(v)
                     if Open then closeOpen() end
                 end
             end
@@ -1503,11 +1488,7 @@ function Library:Main(GName)
                 GTextBox.Text = Cg
                 BTextBox.Text = Cb
                 pcall(callback, Color3.fromHSV(h, s, v))
-                if IsRainbow then
-                    Config[TName][CName] = "Rainbow"
-                else
-                    Config[TName][CName] = "Color3.fromHSV("..h..", "..s..", "..v..")"
-                end
+
             end
 
             if not IsRainbow then
@@ -1659,135 +1640,6 @@ function Library:Main(GName)
         return ItemLibrary
     end
 
-    function TabLibrary:NewConfigTab(CustomCredits) 
-        local Path = "RealZzHub/" .. game.GameId
-        if not isfolder("RealZzHub") then makefolder("RealZzHub") end
-        if not isfolder(Path) then
-            makefolder(Path)
-        end
-        local DefaultConfig = Config
-        if DefaultConfig then
-            writefile(Path.."/default.json", zzHttpService:JSONEncode(DefaultConfig))
-        end
-
-        local configs = {"t"}
-        local SelectedConfig
-        local NM
-        local ConfigTab = TabLibrary:NewTab("Settings")
-
-        local ThemesList = {}
-        for _,v in pairs(Themes) do
-            table.insert(ThemesList, v.Name)
-        end
-
-        local function UpdateTheme(SelectedTheme)
-            local OldTheme = Theme
-            Theme = nil
-            for _,v in pairs(Themes) do
-                if v.Name == SelectedTheme then
-                    Theme = v
-                    break
-                end
-            end
-            MainBackground.Image = Theme.Background
-            Logo.Image = Theme.Logo
-            for _,v in pairs(IList) do
-                if v:IsA("ImageButton") then
-                    if v.ImageColor3 == OldTheme.Color1 then
-                        v.ImageColor3 = Theme.Color1
-                    else
-                        v.ImageColor3 = Theme.Color2
-                    end
-                else
-                    if v.BackgroundColor3 == OldTheme.Color1 then
-                        v.BackgroundColor3 = Theme.Color1
-                    else
-                        v.BackgroundColor3 = Theme.Color2
-                    end
-                end
-            end
-        end
-
-        ConfigTab:NewLabel("Main", true)
-        ConfigTab:NewDropdown("Theme", ThemesList, function(v)
-            UpdateTheme(v)
-        end, true)
-        ConfigTab:NewSlider("Rainbow Speed", 1,10,1,function(v)
-            RainbowSpeed = 11-v
-        end, 7)
-        ConfigTab:NewKeybind("Toggle UI", Enum.KeyCode[ToggleKeybind], function(v)
-            ToggleKeybind = v.Name
-        end)
-        
-        ConfigTab:NewLabel("Configs", true)
-        ConfigTab:NewLabel("Path: "..Path)
-        local ConfigDropdown = ConfigTab:NewDropdown("Configs", configs, function(v)
-            SelectedConfig = v
-        end, true)
-        ConfigDropdown:Clear()
-        wait(0.2)
-        for _, v in pairs(listfiles(Path)) do
-            table.insert(configs, string.split(v,Path.."\\")[2])
-            ConfigDropdown:AddItem(tostring(string.split(v,Path.."\\")[2]))
-        end
-        ConfigDropdown:Set("default.json")
-        ConfigTab:NewButton("Load", function()
-            local c = zzHttpService:JSONDecode(readfile(Path.."/"..string.lower(SelectedConfig)))
-            for i, v in pairs(c) do
-                if Functions[i] and type(v) == "table" then
-                    for x, y in pairs(v) do
-                        if Functions[i][x] and y ~= nil then
-                            pcall(Functions[i][x].Set, Functions[i][x], y)
-                        end
-                    end
-                end
-            end
-        end)
-        ConfigTab:NewButton("Delete", function()
-            if string.lower(SelectedConfig) == "default.json" then
-                TabLibrary:Notify("default.json cannot be removed!", 2)
-            else
-                delfile(Path.."/"..string.lower(SelectedConfig))
-                configs = {}
-                ConfigDropdown:Clear()
-                wait(0.4)
-                for _, v in pairs(listfiles(Path)) do
-                    table.insert(configs, string.split(v,Path..game.GameId.."\\")[2])
-                    ConfigDropdown:AddItem(tostring(string.split(v,Path.."\\")[2]))
-                end
-                ConfigDropdown:Set(configs[1])
-            end
-        end)
-        ConfigTab:NewButton("Overwrite", function()
-            if string.lower(SelectedConfig) == "default.json" then
-                TabLibrary:Notify("Default.json cannot be overwriten!", 2)
-            else
-                writefile(Path.."/"..string.lower(SelectedConfig),zzHttpService:JSONEncode(Config))
-            end
-        end)
-        ConfigTab:NewTextBox("Config Name", function(v) 
-            NM = string.lower(v) 
-        end, "...", true)
-        ConfigTab:NewButton("Create", function()
-            if isfile(Path.."/"..string.lower(NM)..".json") or string.lower(NM) == "default" then
-                TabLibrary:Notify("Config already exists!", 2)
-            else
-                writefile(Path.."/"..string.lower(NM)..".json",zzHttpService:JSONEncode(Config))
-                configs = {}
-                ConfigDropdown:Clear()
-                wait(0.4)
-                for _, v in pairs(listfiles("RealZzHub/"..game.GameId)) do
-                    table.insert(configs, string.split(v,"RealZzHub/"..game.GameId.."\\")[2])
-                    ConfigDropdown:AddItem(tostring(string.split(v,"RealZzHub/"..game.GameId.."\\")[2]))
-                end
-                ConfigDropdown:Set(configs[1])
-            end
-        end)
-        CustomCredits = CustomCredits or tostring(game:HttpGet("https://raw.githubusercontent.com/RealZzHub/MainV2/main/Misc/Credits.txt"))
-        local Credits = string.split((CustomCredits), ",")
-        ConfigTab:NewDropdown("Credits", Credits, function(v)
-            return
-        end, false)
 
     end
 

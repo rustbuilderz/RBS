@@ -1,182 +1,201 @@
--- // ⚙ SERVICES
-local UserInputService = game:GetService("UserInputService")
-local CoreGui = game:GetService("CoreGui")
+-- ⚙ Services
+local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
+local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
+local PlaceId = game.PlaceId -- Get current game ID
+
+-- 🌍 Ensure Global Settings Exist
+_G.GlobalSettings = _G.GlobalSettings or {
+    -- ESP Settings
+    ESPEnabled = false,
+    ESPBox = false,
+    ESPName = false,
+    ESPTracer = false,
+    BoxColor = Color3.fromRGB(255, 0, 0), -- Red
+    NameColor = Color3.fromRGB(255, 255, 255), -- White
+    TracerColor = Color3.fromRGB(0, 255, 0), -- Green
 
 
--- // 🌍 GLOBAL SETTINGS
-_G.settings = _G.settings or {
-    headHitboxSize = Vector3.new(21, 21, 21),
-    headTransparency = 1,
-}
 
-_G.AimbotSettings = _G.AimbotSettings or {
-    Enabled = true,
+    -- Aimbot Settings
+    AimbotEnabled = false,
     AimKey = Enum.KeyCode.F,
     FOV = 100,
-    LockStrength = 0.8, -- Smoothing
+    LockStrength = 0.8,
     PredictionFactor = 0.08,
-    TargetPart = "Head"
+    TargetPart = "Head",
+    SilentAim = false,
+
+    -- Fly Settings
+    FlyEnabled = false, -- Default Off
+    FlySpeed = 50,
+    FlyKeybind = Enum.KeyCode.E -- Default X
+
 }
 
--- // 📜 SCRIPT URLS
-local scripts = {
-    Aimbot = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua",
-    ESP = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua",
-    Fly = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua",
-    InfiniteJump = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/infinitejump.lua",
-    Rejoin = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/rejoin.lua",
-    HeadHitbox = "https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"
-}
+-- 🎯 Load Aimbot
+local successAimbot, AimbotScript = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/aimbot.lua"))()
+end)
+if not successAimbot then warn("❌ Failed to load Aimbot!") end
 
--- 🚀 Function to load scripts dynamically
-local function loadScript(url)
-    if not url or url == "" then
-        warn("[ERROR] Invalid Script URL!")
-        return
-    end
-    local success, response = pcall(function()
-        return game:HttpGet(url, true)
-    end)
-    if not success or not response or response == "" then
-        warn("[ERROR] Failed to Fetch Script:", url)
-        return
-    end
-    local executed, errorMsg = pcall(loadstring(response))
-    if not executed then
-        warn("[ERROR] Execution Failed:", errorMsg)
-    else
-        print(".")
-    end
-end
+local successHitbox, HeadHitboxScript = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/headhitbox.lua"))()
+end)
+if not successHitbox then warn("❌ Failed to load Head Hitbox Script!") end
+-- 👀 Load ESP
+local successESP, ESPScript = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/esp.lua"))()
+end)
+if not successESP then warn("❌ Failed to load ESP!") end
 
--- // 🎨 UI CREATION
-local screenGui = Instance.new("ScreenGui", CoreGui)
-screenGui.Name = "CheatMenuUI"
-screenGui.IgnoreGuiInset = true
+-- ✈️ Load Fly Script
+local successFly, FlyScript = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua"))()
+end)
+if not successFly then warn("❌ Failed to load Fly Script!") end
 
-local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 350, 0, 400)
-frame.Position = UDim2.new(0.05, 0, 0.05, 0)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.BorderSizePixel = 2
-frame.Active = true
-frame.Draggable = true
-frame.Visible = true
+-- 🖥️ Load UI Library
+local successUI, UILib = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/lib/library.lua"))()
+end)
+if not successUI then warn("❌ Failed to load UI Library!") end
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 40)
-title.Text = "🔥 Cheat Menu 🔥"
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 22
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-title.BorderSizePixel = 0
+-- 🎛️ Create UI
+local Main = UILib:Main("Script Menu")
 
--- ✅ Scrollable UI to Prevent Overlapping
-local scrollingFrame = Instance.new("ScrollingFrame", frame)
-scrollingFrame.Size = UDim2.new(1, 0, 1, -45)
-scrollingFrame.Position = UDim2.new(0, 0, 0, 45)
-scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-scrollingFrame.ScrollBarThickness = 5
+-- Ensure Silent Aim Globals Exist
+_G.SilentAimEnabled = _G.SilentAimEnabled or false
+_G.HeadHitboxSize = _G.HeadHitboxSize or Vector3.new(5, 5, 5) -- Default size
 
-local layout = Instance.new("UIListLayout", scrollingFrame)
-layout.Padding = UDim.new(0, 5)
+-- 🔫 Aimbot Tab
+local AimbotTab = Main:NewTab("Aimbot")
 
-local function createButton(text, callback)
-    local button = Instance.new("TextButton", scrollingFrame)
-    button.Size = UDim2.new(1, 0, 0, 40)
-    button.Text = text
-    button.Font = Enum.Font.SourceSansBold
-    button.TextSize = 18
-    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.MouseButton1Click:Connect(callback)
-end
+AimbotTab:NewToggle("Aimbot", function(state)
+    _G.GlobalSettings.AimbotEnabled = state
+end, _G.GlobalSettings.AimbotEnabled)
 
-for name, url in pairs(scripts) do
-    createButton("Load " .. name, function()
-        loadScript(url)
-    end)
-end
+AimbotTab:NewToggle("Silent Aim", function(state)
+    _G.SilentAimEnabled = state
+    _G.GlobalSettings.SilentAim = state
+end, _G.GlobalSettings.SilentAim)
 
--- ✍ Customization Input Fields
-local function createTextBox(labelText, defaultValue, onTextChanged)
-    local container = Instance.new("Frame", scrollingFrame)
-    container.Size = UDim2.new(1, 0, 0, 60)
-    container.BackgroundTransparency = 1
+-- Head Hitbox Size Slider (Silent Aim Size)
+AimbotTab:NewSlider("Head Hitbox Size", 1, 21, 1, function(value)
+    _G.HeadHitboxSize = Vector3.new(value, value, value)
+end, _G.HeadHitboxSize.X, 5)
 
-    local label = Instance.new("TextLabel", container)
-    label.Size = UDim2.new(1, 0, 0, 25)
-    label.Text = labelText
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.BackgroundTransparency = 1
+AimbotTab:NewSlider("Lock Strength", 1, 100, 1, function(value)
+    _G.GlobalSettings.LockStrength = value / 100
+end, (_G.GlobalSettings.LockStrength or 0.8) * 100)
 
-    local textBox = Instance.new("TextBox", container)
-    textBox.Size = UDim2.new(1, 0, 0, 30)
-    textBox.Position = UDim2.new(0, 0, 0, 25)
-    textBox.Text = defaultValue
-    textBox.ClearTextOnFocus = false
-    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    textBox.FocusLost:Connect(function()
-        onTextChanged(textBox.Text)
-    end)
-end
+AimbotTab:NewSlider("Prediction Factor", 0, 100, 1, function(value)
+    _G.GlobalSettings.PredictionFactor = value / 100
+end, (_G.GlobalSettings.PredictionFactor or 0.08) * 100)
 
--- 🎯 Head Hitbox Customization
-createTextBox("Head Hitbox Size (X, Y, Z)", "21,21,21", function(text)
-    local values = {text:match("(%d+),(%d+),(%d+)")}
-    if #values == 3 then
-        _G.settings.headHitboxSize = Vector3.new(tonumber(values[1]), tonumber(values[2]), tonumber(values[3]))
-        print("[DEBUG] Updated Head Hitbox Size:", _G.settings.headHitboxSize)
-    else
-        warn("[ERROR] Invalid Head Hitbox Format! Use: X,Y,Z")
+AimbotTab:NewDropdown("Target Part", {"Head", "Torso", "Legs"}, function(selected)
+    _G.GlobalSettings.TargetPart = selected
+end, _G.GlobalSettings.TargetPart or "Head")
+
+AimbotTab:NewDropdown("Aim Key", {"Right Mouse Button", "Left Mouse Button", "X", "C"}, function(selected)
+    local keyMap = {
+        ["Right Mouse Button"] = Enum.UserInputType.MouseButton2,
+        ["Left Mouse Button"] = Enum.UserInputType.MouseButton1,
+        ["X"] = Enum.KeyCode.X,
+        ["C"] = Enum.KeyCode.C
+    }
+    _G.GlobalSettings.AimKey = keyMap[selected] or Enum.KeyCode.F
+end, "Right Mouse Button")
+
+
+-- 🟢 ESP Tab
+local ESPTab = Main:NewTab("ESP")
+
+ESPTab:NewToggle("ESP", function(state)
+    _G.GlobalSettings.ESPEnabled = state
+end, _G.GlobalSettings.ESPEnabled)
+
+ESPTab:NewToggle("ESP Box", function(state)
+    _G.GlobalSettings.ESPBox = state
+end, _G.GlobalSettings.ESPBox)
+
+ESPTab:NewToggle("ESP Name", function(state)
+    _G.GlobalSettings.ESPName = state
+end, _G.GlobalSettings.ESPName)
+
+ESPTab:NewToggle("ESP Tracer", function(state)
+    _G.GlobalSettings.ESPTracer = state
+end, _G.GlobalSettings.ESPTracer)
+
+-- 🚀 Movement Tab
+local MovementTab = Main:NewTab("Movement")
+
+local InfiniteJumpEnabled = false
+
+MovementTab:NewToggle("Infinite Jump", function(state)
+    InfiniteJumpEnabled = state
+    _G.GlobalSettings.InfiniteJump = state
+end, _G.GlobalSettings.InfiniteJump)
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        local humanoid = game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid:ChangeState("Jumping")
+        end
     end
 end)
 
-createTextBox("Head Transparency (0-1)", "1", function(text)
-    local value = tonumber(text)
-    if value and value >= 0 and value <= 1 then
-        _G.settings.headTransparency = value
-        print("[DEBUG] Updated Head Transparency:", _G.settings.headTransparency)
-    else
-        warn("[ERROR] Invalid Transparency Value! Use a number between 0 and 1.")
+
+MovementTab:NewToggle("Fly", function(state)
+    _G.GlobalSettings.FlyEnabled = state
+    if _G.SetFly then
+        _G.SetFly(state)
+    end
+end, _G.GlobalSettings.FlyEnabled)
+
+MovementTab:NewSlider("Fly Speed", 10, 100, 5, function(value)
+    _G.GlobalSettings.FlySpeed = value
+    if _G.UpdateFlySpeed then
+        _G.UpdateFlySpeed(value)
+    end
+end, _G.GlobalSettings.FlySpeed)
+
+MovementTab:NewDropdown("Fly Keybind", {"F", "B", "E", "C"}, function(selected)
+    local keyMap = {
+        ["F"] = Enum.KeyCode.F,
+        ["B"] = Enum.KeyCode.B,
+        ["E"] = Enum.KeyCode.E,
+        ["C"] = Enum.KeyCode.C
+    }
+    _G.GlobalSettings.FlyKeybind = keyMap[selected] or Enum.KeyCode.E
+end, "E")
+
+-- 🔧 Miscellaneous Tab
+local MiscTab = Main:NewTab("Misc")
+
+MiscTab:NewButton("Rejoin Lobby", function()
+    print("🔄 Rejoining...")
+    TeleportService:Teleport(PlaceId, LocalPlayer)
+end)
+
+-- 🔄 Sync ESP in Real-Time
+RunService.RenderStepped:Connect(function()
+    if _G.GlobalSettings.ESPEnabled and ESPScript then
+        if typeof(ESPScript.UpdateESP) == "function" then
+            ESPScript.UpdateESP(_G.GlobalSettings)
+        end
     end
 end)
 
--- 🎯 Aimbot Settings
-createTextBox("Aimbot FOV", tostring(_G.AimbotSettings.FOV), function(text)
-    local value = tonumber(text)
-    if value and value > 0 then
-        _G.AimbotSettings.FOV = value
-        print("[DEBUG] Updated Aimbot FOV:", _G.AimbotSettings.FOV)
+-- 🔄 Sync Aimbot in Real-Time
+RunService.RenderStepped:Connect(function()
+    if _G.GlobalSettings.AimbotEnabled and AimbotScript then
+        if typeof(AimbotScript.UpdateAimbot) == "function" then
+            AimbotScript.UpdateAimbot(_G.GlobalSettings)
+        end
     end
 end)
-
-createTextBox("Aimbot Lock Strength (0-1)", tostring(_G.AimbotSettings.LockStrength), function(text)
-    local value = tonumber(text)
-    if value and value >= 0 and value <= 1 then
-        _G.AimbotSettings.LockStrength = value
-        print("[DEBUG] Updated Aimbot Lock Strength:", _G.AimbotSettings.LockStrength)
-    end
-end)
-
-createTextBox("Aimbot Prediction Factor", tostring(_G.AimbotSettings.PredictionFactor), function(text)
-    local value = tonumber(text)
-    if value and value >= 0 then
-        _G.AimbotSettings.PredictionFactor = value
-        print("[DEBUG] Updated Aimbot Prediction Factor:", _G.AimbotSettings.PredictionFactor)
-    end
-end)
-
--- 🔄 Toggle UI Visibility with Insert Key
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Insert then
-        frame.Visible = not frame.Visible
-    end
-end)
-

@@ -3,15 +3,19 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+-- 🌍 Global Silent Aim Toggle
+_G.SilentAimEnabled = _G.SilentAimEnabled or false
+
 -- 🛠 Function to Modify Head Hitbox Dynamically
 local function ModifyHeadHitbox(character)
+    if not _G.SilentAimEnabled then return end -- Stop if SilentAim is disabled
     if not character then return end
 
     local hitboxSize = _G.settings and _G.settings.headHitboxSize or Vector3.new(5, 5, 5)
     local transparency = _G.settings and _G.settings.headTransparency or 1
 
     for _, part in pairs(character:GetChildren()) do
-        if part:IsA("MeshPart") or part:IsA("Part") and part.Name == "Head" then
+        if (part:IsA("MeshPart") or part:IsA("Part")) and part.Name == "Head" then
             -- Apply Hitbox Modifications
             part.Size = hitboxSize
             part.CanCollide = false
@@ -31,10 +35,12 @@ end
 -- 🔄 Constantly Modify Head Hitbox Based on Settings
 task.spawn(function()
     while true do
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                if player.Character.Humanoid.Health > 0 then
-                    ModifyHeadHitbox(player.Character)
+        if _G.SilentAimEnabled then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                    if player.Character.Humanoid.Health > 0 then
+                        ModifyHeadHitbox(player.Character)
+                    end
                 end
             end
         end
@@ -49,4 +55,3 @@ Players.PlayerAdded:Connect(function(player)
         ModifyHeadHitbox(character)
     end)
 end)
-

@@ -184,14 +184,7 @@ end)
 
 MiscTab:NewButton("Bullet Tracer WARNING THIS IS EXPERIMENTAL", function()
     print("⚠️ Loading Bullet Tracer Script...")
-    local successTracer, TracerScript = pcall(function()
-        return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/tracer.lua"))()
-    end)
-    if successTracer then
-        print("✅ Bullet Tracer Script Loaded!")
-    else
-        warn("❌ Failed to load Bullet Tracer Script!")
-    end
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/tracer.lua"))()
 end)
 
 

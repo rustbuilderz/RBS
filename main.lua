@@ -156,6 +156,20 @@ MovementTab:NewToggle("Fly", function(state)
         _G.SetFly(state)
     end
 end, _G.GlobalSettings.FlyEnabled)
+MovementTab:NewButton("Refresh Fly", function()
+    print("🔄 Reloading Fly Script...")
+    local successFly, FlyScript = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/fly.lua"))()
+    end)
+    if not successFly then
+        warn("❌ Failed to reload Fly Script!")
+    else
+        _G.SetFly = FlyScript.SetFly
+        _G.UpdateFlySpeed = FlyScript.UpdateFlySpeed
+        print("✅ Fly Script Reloaded Successfully!")
+    end
+end)
+
 
 MovementTab:NewSlider("Fly Speed", 10, 100, 5, function(value)
     _G.GlobalSettings.FlySpeed = value
@@ -173,6 +187,7 @@ MovementTab:NewDropdown("Fly Keybind", {"F", "B", "E", "C"}, function(selected)
     }
     _G.GlobalSettings.FlyKeybind = keyMap[selected] or Enum.KeyCode.E
 end, "E")
+
 
 -- 🔧 Miscellaneous Tab
 local MiscTab = Main:NewTab("Misc")

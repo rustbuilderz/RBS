@@ -10,7 +10,7 @@ local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
 _G.GlobalSettings = _G.GlobalSettings or {
     FlyEnabled = false,
     FlySpeed = 50,
-    FlyKeybind = Enum.KeyCode.X -- Default keybind (Changeable in UI)
+    FlyKeybind = Enum.KeyCode.F -- Default keybind (Changeable in UI)
 }
 
 -- ✈️ Fly Variables
@@ -74,3 +74,21 @@ _G.SetFly = ToggleFly
 _G.UpdateFlySpeed = UpdateFlySpeed
 
 print("✅ Fly Script Loaded Successfully")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- red

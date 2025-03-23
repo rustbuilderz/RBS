@@ -6,10 +6,10 @@ local LocalPlayer = Players.LocalPlayer
 
 -- 🌍 Global Settings for ESP
 _G.GlobalSettings = _G.GlobalSettings or {
-    ESPEnabled = true,
-    ESPBox = true,
-    ESPName = true,
-    ESPTracer = true,
+    ESPEnabled = false,
+    ESPBox = false,
+    ESPName = false,
+    ESPTracer = false,
     BoxColor = Color3.fromRGB(255, 0, 0), -- Red
     NameColor = Color3.fromRGB(255, 255, 255), -- White
     TracerColor = Color3.fromRGB(0, 255, 0) -- Green

@@ -10,7 +10,7 @@ local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 _G.GlobalSettings = _G.GlobalSettings or {
     FlyEnabled = false,
     FlySpeed = 50,
-    FlyKeybind = Enum.KeyCode.F -- Default keybind (Changeable in UI)
+    FlyKeybind = Enum.KeyCode.E -- Default keybind (Changeable in UI)
 }
 
 -- ✈️ Fly Variables

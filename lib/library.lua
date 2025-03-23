@@ -21,7 +21,7 @@ end)
 
 local RainbowSpeed = 7
 local Theme = Themes[1]
-local ToggleKeybind = "LeftControl"
+local ToggleKeybind = "Insert"
 local IsFocused = false
 local IList = {} 
 

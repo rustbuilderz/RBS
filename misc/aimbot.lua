@@ -5,30 +5,29 @@ local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
--- 🌍 Load Global Aimbot Settings
+-- 🌍 Initialize Global Aimbot Settings
 _G.AimbotSettings = _G.AimbotSettings or {
-    AimbotEnabled = false,
-    AimKey = Enum.KeyCode.F,
-    FOV = 100,
-    LockStrength = 0.8,
-    PredictionFactor = 0.08,
-    TargetPart = "Head"
+    AimbotEnabled = false,  -- ✅ Toggle via UI
+    AimKey = Enum.KeyCode.F, -- Default to 'F' key
+    FOV = 100,              -- ✅ Field of View for target selection
+    LockStrength = 1.0,     -- ✅ How strong the aim assist is (0.0 - 1.0)
+    PredictionFactor = 0.1, -- ✅ Adjusts for movement
+    TargetPart = "Head"     -- ✅ Aim at Head (can be set to "Torso")
 }
 
--- 🎯 Get Closest Target in FOV
+-- 🎯 Function: Get Closest Player in FOV
 local function GetClosestPlayer()
     local closestPlayer = nil
-    local closestDist = _G.AimbotSettings.FOV or 100
+    local closestDist = _G.AimbotSettings.FOV
 
     for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(_G.AimbotSettings.TargetPart) and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(_G.AimbotSettings.TargetPart) then
             local part = player.Character[_G.AimbotSettings.TargetPart]
             local root = player.Character:FindFirstChild("HumanoidRootPart")
 
-            if root then
+            if root and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
                 local velocity = root.Velocity * _G.AimbotSettings.PredictionFactor
                 local predictedPos = part.Position + velocity
-
                 local screenPos, onScreen = Camera:WorldToViewportPoint(predictedPos)
 
                 if onScreen then
@@ -42,10 +41,16 @@ local function GetClosestPlayer()
         end
     end
 
+    if closestPlayer then
+        print("🎯 Target Locked:", closestPlayer.Name)
+    else
+        print("❌ No valid target found")
+    end
+
     return closestPlayer
 end
 
--- 🔥 Aim at Target
+-- 🔥 Function: Aim at Target
 local function AimAtTarget(player)
     if player and player.Character and player.Character:FindFirstChild(_G.AimbotSettings.TargetPart) then
         local part = player.Character[_G.AimbotSettings.TargetPart]
@@ -60,9 +65,11 @@ local function AimAtTarget(player)
             local moveX = (targetPos.X - mousePos.X) * _G.AimbotSettings.LockStrength
             local moveY = (targetPos.Y - mousePos.Y) * _G.AimbotSettings.LockStrength
 
-            moveX = math.clamp(moveX, -5, 5)
-            moveY = math.clamp(moveY, -5, 5)
+            -- ✅ Dynamically adjust movement strength
+            moveX = math.clamp(moveX, -10, 10)
+            moveY = math.clamp(moveY, -10, 10)
 
+            -- ✅ Mouse movement function
             mousemoverel(moveX, moveY)
         end
     end
@@ -70,8 +77,9 @@ end
 
 -- 🚀 Main Aimbot Loop
 RunService.RenderStepped:Connect(function()
-    if _G.AimbotSettings.AimbotEnabled then  -- ✅ Corrected setting name
+    if _G.AimbotSettings.AimbotEnabled then
         local aimKey = _G.AimbotSettings.AimKey
+        print("🎮 Aimbot Active | AimKey:", aimKey)
 
         local isKeyDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(aimKey))
         local isMouseDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.UserInputType and UserInputService:IsMouseButtonPressed(aimKey))
@@ -82,5 +90,3 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-
-

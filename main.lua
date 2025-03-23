@@ -182,6 +182,19 @@ MiscTab:NewButton("Rejoin Lobby", function()
     TeleportService:Teleport(PlaceId, LocalPlayer)
 end)
 
+MiscTab:NewButton("Bullet Tracer WARNING THIS IS EXPERIMENTAL", function()
+    print("⚠️ Loading Bullet Tracer Script...")
+    local successTracer, TracerScript = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/rustbuilderz/RBS/main/misc/tracer.lua"))()
+    end)
+    if successTracer then
+        print("✅ Bullet Tracer Script Loaded!")
+    else
+        warn("❌ Failed to load Bullet Tracer Script!")
+    end
+end)
+
+
 -- 🔄 Sync ESP in Real-Time
 RunService.RenderStepped:Connect(function()
     if _G.GlobalSettings.ESPEnabled and ESPScript then

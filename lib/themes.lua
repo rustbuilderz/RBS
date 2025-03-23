@@ -4,8 +4,8 @@
 return { 
     {
         Name = "Default",
-        Background = "rbxassetid://7877641241",
-        Logo = "rbxassetid://6771656595",
+        Background = "",
+        Logo = "",
         Color1 = Color3.fromRGB(38, 229, 255),
         Color2 = Color3.fromRGB(20, 255, 20)
     },

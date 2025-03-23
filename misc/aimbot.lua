@@ -70,7 +70,7 @@ end
 
 -- 🚀 Main Aimbot Loop
 RunService.RenderStepped:Connect(function()
-    if _G.AimbotSettings.Enabled then
+    if _G.AimbotSettings.AimbotEnabled then  -- ✅ Corrected setting name
         local aimKey = _G.AimbotSettings.AimKey
 
         local isKeyDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(aimKey))
@@ -82,4 +82,5 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+
 

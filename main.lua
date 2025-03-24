@@ -78,6 +78,10 @@ AimbotTab:NewToggle("Aimbot", function(state)
     _G.GlobalSettings.AimbotEnabled = state
 end, _G.GlobalSettings.AimbotEnabled)
 
+AimbotTab:NewToggle("Keep Target", function(state)
+    _G.GlobalSettings.KeepTarget = state
+end, _G.GlobalSettings.KeepTarget)
+
 AimbotTab:NewSlider("Smoothing", 1, 20, 1, function(value)
     _G.GlobalSettings.Smoothing = value
 end, _G.GlobalSettings.Smoothing or 5)
@@ -103,8 +107,6 @@ AimbotTab:NewDropdown("Aim Key", {"Right Mouse Button", "Left Mouse Button", "X"
     }
     _G.GlobalSettings.AimKey = keyMap[selected] or Enum.KeyCode.F
 end, "Right Mouse Button")
-
-
 
 -- 🟢 ESP Tab
 local ESPTab = Main:NewTab("ESP")

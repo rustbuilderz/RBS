@@ -9,6 +9,7 @@ local LocalPlayer = Players.LocalPlayer
 _G.GlobalSettings = _G.GlobalSettings or {
     AimbotEnabled = true,
     AimKey = Enum.KeyCode.F, -- Default keybind
+    KeepTarget = true,       -- ✅ Keeps locked target while key is held
     FOV = 100,              -- ✅ Field of View
     LockStrength = 0.3,     -- ✅ Adjusts aim pull strength
     PredictionFactor = 0.1, -- ✅ Adjusts for movement
@@ -79,7 +80,11 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == _G.GlobalSettings.AimKey then
         isHoldingAimKey = true
-        lockedTarget = GetClosestPlayer() -- Lock onto the first target found
+
+        -- Select a target only if we don't have one OR if Keep Target is off
+        if not lockedTarget or not _G.GlobalSettings.KeepTarget then
+            lockedTarget = GetClosestPlayer()
+        end
     end
 end)
 
@@ -99,4 +104,3 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
---test

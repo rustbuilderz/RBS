@@ -12,11 +12,20 @@ _G.GlobalSettings = _G.GlobalSettings or {
     FOV = 100,              -- ✅ Field of View for target selection
     LockStrength = 0.3,     -- ✅ How strong the aim assist is (0.0 - 1.0)
     PredictionFactor = 0.1, -- ✅ Adjusts for movement
-    TargetPart = "Head"     -- ✅ Aim at Head (can be set to "Torso")
+    TargetPart = "Head",    -- ✅ Aim at Head (can be set to "Torso")
+    KeepTarget = true,      -- ✅ New: Keeps target until key is released
+    Smoothing = 5           -- ✅ NEW: Smoothness factor (higher = smoother, lower = snappier)
 }
+
+-- 🔄 Current Target Variable
+local currentTarget = nil
 
 -- 🎯 Function: Get Closest Player in FOV
 local function GetClosestPlayer()
+    if _G.GlobalSettings.KeepTarget and currentTarget and currentTarget.Character and currentTarget.Character:FindFirstChild(_G.GlobalSettings.TargetPart) then
+        return currentTarget -- Keeps the locked target if valid
+    end
+
     local closestPlayer = nil
     local closestDist = _G.GlobalSettings.FOV
 
@@ -44,7 +53,7 @@ local function GetClosestPlayer()
     return closestPlayer
 end
 
--- 🔥 Function: Aim at Target
+-- 🔥 Function: Aim at Target (Now with Smoothing)
 local function AimAtTarget(player)
     if player and player.Character and player.Character:FindFirstChild(_G.GlobalSettings.TargetPart) then
         local part = player.Character[_G.GlobalSettings.TargetPart]
@@ -59,16 +68,29 @@ local function AimAtTarget(player)
             local moveX = (targetPos.X - mousePos.X) * _G.GlobalSettings.LockStrength
             local moveY = (targetPos.Y - mousePos.Y) * _G.GlobalSettings.LockStrength
 
-            -- ✅ Dynamically adjust movement strength
+            -- ✅ Apply Smoothing
+            local smoothFactor = _G.GlobalSettings.Smoothing
+            moveX = moveX / smoothFactor
+            moveY = moveY / smoothFactor
+
+            -- ✅ Clamp the movement to prevent excessive movement
             moveX = math.clamp(moveX, -10, 10)
             moveY = math.clamp(moveY, -10, 10)
 
-            -- ✅ Mouse movement function
+            -- ✅ Move the mouse gradually
             mousemoverel(moveX, moveY)
         end
     end
 end
 
+-- 🔄 Track Key Release to Reset Target
+UserInputService.InputEnded:Connect(function(input)
+    if input.KeyCode == _G.GlobalSettings.AimKey then
+        currentTarget = nil -- Release target when key is released
+    end
+end)
+
+-- 🔄 Main Aimbot Loop
 RunService.RenderStepped:Connect(function()
     if _G.GlobalSettings.AimbotEnabled then
         local aimKey = _G.GlobalSettings.AimKey
@@ -76,9 +98,12 @@ RunService.RenderStepped:Connect(function()
         local isMouseDown = (typeof(aimKey) == "EnumItem" and aimKey.EnumType == Enum.UserInputType and UserInputService:IsMouseButtonPressed(aimKey))
 
         if isKeyDown or isMouseDown then
-            local target = GetClosestPlayer()
-            if target then
-                AimAtTarget(target)
+            if not currentTarget or not _G.GlobalSettings.KeepTarget then
+                currentTarget = GetClosestPlayer() -- Only update target if not locked
+            end
+
+            if currentTarget then
+                AimAtTarget(currentTarget)
             end
         end
     end

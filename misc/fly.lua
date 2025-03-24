@@ -3,8 +3,6 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
 -- 🌍 Ensure Global Settings Exist
 _G.GlobalSettings = _G.GlobalSettings or {
@@ -18,6 +16,21 @@ local flying = false
 local flyVelocity
 local flyGyro
 local movementDirection = Vector3.new(0, 0, 0)
+local HumanoidRootPart
+
+-- 🔄 Function to get the latest HumanoidRootPart after respawn
+local function UpdateCharacter()
+    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart") -- Ensure we have a valid part
+end
+
+-- Detect Character Respawn
+LocalPlayer.CharacterAdded:Connect(function()
+    UpdateCharacter()
+    if _G.GlobalSettings.FlyEnabled then
+        ToggleFly(true) -- Re-enable fly after respawn
+    end
+end)
 
 -- 🔄 Update Fly Speed Dynamically
 local function UpdateFlySpeed(speed)
@@ -26,6 +39,10 @@ end
 
 -- 🚀 Toggle Fly Function
 local function ToggleFly(state)
+    if not HumanoidRootPart then
+        UpdateCharacter() -- Ensure we have the right character part
+    end
+
     if state == nil then
         flying = not flying
     else
@@ -47,7 +64,6 @@ local function ToggleFly(state)
         flyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
         flyGyro.Parent = HumanoidRootPart
 
-        print("🚀 Fly Enabled")
     else
         if flyVelocity then
             flyVelocity:Destroy()
@@ -61,7 +77,6 @@ local function ToggleFly(state)
 
         movementDirection = Vector3.new(0, 0, 0)
 
-        print("🛑 Fly Disabled")
     end
 end
 
@@ -74,9 +89,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-    -- 🎮 Handle Movement Input
-    local function UpdateMovement()
-        movementDirection = Vector3.new(0, 0, 0)
+-- 🎮 Handle Movement Input
+local function UpdateMovement()
+    movementDirection = Vector3.new(0, 0, 0)
 
     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
         movementDirection = movementDirection + Vector3.new(0, 0, -1) -- Move forward
@@ -120,4 +135,6 @@ end)
 _G.SetFly = ToggleFly
 _G.UpdateFlySpeed = UpdateFlySpeed
 
-print("✅ Fly Script Loaded Successfully")
+-- Initialize Character on Script Load
+UpdateCharacter()
+

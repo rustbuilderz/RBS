@@ -108,6 +108,8 @@ AimbotTab:NewDropdown("Aim Key", {"Right Mouse Button", "Left Mouse Button", "X"
     _G.GlobalSettings.AimKey = keyMap[selected] or Enum.KeyCode.F
 end, "Right Mouse Button")
 
+
+
 -- 🟢 ESP Tab
 local ESPTab = Main:NewTab("ESP")
 

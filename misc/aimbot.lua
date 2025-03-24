@@ -4,13 +4,13 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
-
+--test
 -- 🌍 Ensure Global Settings Exist
 _G.GlobalSettings = _G.GlobalSettings or {
-    AimbotEnabled = true,  -- ✅ Toggle via UI
+    AimbotEnabled = false,  -- ✅ Toggle via UI
     AimKey = Enum.KeyCode.F, -- Default to 'F' key
     FOV = 100,              -- ✅ Field of View for target selection
-    LockStrength = 0.3,     -- ✅ How strong the aim assist is (0.0 - 1.0)
+    LockStrength = 1.0,     -- ✅ How strong the aim assist is (0.0 - 1.0)
     PredictionFactor = 0.1, -- ✅ Adjusts for movement
     TargetPart = "Head"     -- ✅ Aim at Head (can be set to "Torso")
 }

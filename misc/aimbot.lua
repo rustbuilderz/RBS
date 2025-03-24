@@ -87,7 +87,7 @@ end)
 UserInputService.InputEnded:Connect(function(input, gameProcessed)
     if input.KeyCode == _G.GlobalSettings.AimKey then
         isHoldingAimKey = false
-        lockedTarget = nil -- Reset the target immediately
+        lockedTarget = nil -- ✅ RESET TARGET IMMEDIATELY ON KEY RELEASE
     end
 end)
 
@@ -99,3 +99,4 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+--test

@@ -8,7 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 -- 🌍 Ensure Global Settings Exist
 _G.GlobalSettings = _G.GlobalSettings or {
     AimbotEnabled = true,
-    AimKey = Enum.KeyCode.F, -- Default keybind
+    AimKey = Enum.KeyCode.F,
     KeepTarget = true,       -- ✅ Keeps locked target while key is held
     FOV = 100,              -- ✅ Field of View
     LockStrength = 0.3,     -- ✅ Adjusts aim pull strength
@@ -17,8 +17,8 @@ _G.GlobalSettings = _G.GlobalSettings or {
     Smoothing = 5           -- ✅ Smooth aim movement
 }
 
-local lockedTarget = nil -- Stores the locked player
-local isHoldingAimKey = false -- Tracks if key is held
+local lockedTarget = nil
+local isHoldingAimKey = false
 
 -- 🎯 Get Closest Player in FOV
 local function GetClosestPlayer()
@@ -104,3 +104,4 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+--test

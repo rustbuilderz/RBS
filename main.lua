@@ -71,30 +71,28 @@ local Main = UILib:Main("Script Menu")
 _G.SilentAimEnabled = _G.SilentAimEnabled or false
 _G.HeadHitboxSize = _G.HeadHitboxSize or Vector3.new(5, 5, 5) -- Default size
 
--- 🔫 Aimbot Tab
+-- 🎯 Aimbot Tab
 local AimbotTab = Main:NewTab("Aimbot")
 
 AimbotTab:NewToggle("Aimbot", function(state)
     _G.GlobalSettings.AimbotEnabled = state
 end, _G.GlobalSettings.AimbotEnabled)
 
-AimbotTab:NewToggle("Silent Aim", function(state)
-    _G.SilentAimEnabled = state
-    _G.GlobalSettings.SilentAim = state
-end, _G.GlobalSettings.SilentAim)
+AimbotTab:NewToggle("Keep Target", function(state)
+    _G.GlobalSettings.KeepTarget = state
+end, _G.GlobalSettings.KeepTarget)
 
--- Head Hitbox Size Slider (Silent Aim Size)
-AimbotTab:NewSlider("Head Hitbox Size", 1, 21, 1, function(value)
-    _G.HeadHitboxSize = Vector3.new(value, value, value)
-end, _G.HeadHitboxSize.X, 5)
+AimbotTab:NewSlider("Smoothing", 1, 20, 1, function(value)
+    _G.GlobalSettings.Smoothing = value
+end, _G.GlobalSettings.Smoothing or 5)
 
 AimbotTab:NewSlider("Lock Strength", 1, 100, 1, function(value)
     _G.GlobalSettings.LockStrength = value / 100
-end, (_G.GlobalSettings.LockStrength or 0.8) * 100)
+end, (_G.GlobalSettings.LockStrength or 0.3) * 100)
 
 AimbotTab:NewSlider("Prediction Factor", 0, 100, 1, function(value)
     _G.GlobalSettings.PredictionFactor = value / 100
-end, (_G.GlobalSettings.PredictionFactor or 0.08) * 100)
+end, (_G.GlobalSettings.PredictionFactor or 0.1) * 100)
 
 AimbotTab:NewDropdown("Target Part", {"Head", "Torso", "Legs"}, function(selected)
     _G.GlobalSettings.TargetPart = selected
@@ -109,6 +107,7 @@ AimbotTab:NewDropdown("Aim Key", {"Right Mouse Button", "Left Mouse Button", "X"
     }
     _G.GlobalSettings.AimKey = keyMap[selected] or Enum.KeyCode.F
 end, "Right Mouse Button")
+
 
 
 -- 🟢 ESP Tab
